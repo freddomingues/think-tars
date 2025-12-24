@@ -46,3 +46,17 @@ PINECONE_ENVIRONMENT = os.getenv('PINECONE_ENVIRONMENT', 'us-east-1')
 PINECONE_INDEX_NAME = os.getenv('PINECONE_INDEX_NAME', 'genai-documents')
 CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 1000))
 CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 200))
+
+# --- Binance ---
+BINANCE_API_KEY = os.getenv('BINANCE_API_KEY', '')
+BINANCE_API_SECRET = os.getenv('BINANCE_API_SECRET', '')
+
+# --- Email Notifications ---
+SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
+SMTP_PORT = int(os.getenv('SMTP_PORT', '587'))
+EMAIL_FROM = os.getenv('EMAIL_FROM', '')
+EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', '')
+EMAIL_TO = os.getenv('EMAIL_TO', 'fred_domingues@outlook.com')
+
+# --- Cron Security ---
+CRON_SECRET_TOKEN = os.getenv('CRON_SECRET_TOKEN', '')

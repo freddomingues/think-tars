@@ -2,7 +2,13 @@
 from openai import OpenAI
 from config.settings import OPENAI_API_KEY, LLM_MODEL
 from llm_assistant.prompt_templates import DEFAULT_ASSISTANT_INSTRUCTIONS
-from llm_assistant.tools import TOOLS_DEFINITION
+
+# Importação opcional de TOOLS_DEFINITION para evitar dependências do Pinecone
+try:
+    from llm_assistant.tools import TOOLS_DEFINITION
+except (ImportError, ValueError):
+    # Se houver erro (ex: Pinecone não configurado), usa lista vazia
+    TOOLS_DEFINITION = []
 
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 

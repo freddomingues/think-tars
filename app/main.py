@@ -31,6 +31,9 @@ from ingest.ingest_faqs import index_all_faqs
 
 from logging_config import setup_logging, log_webhook_received, log_tool_call, log_ai_response, log_error, log_success
 
+# Endpoint de cron será registrado após app ser criado (evita dependências do Pinecone)
+register_cron_endpoint = None
+
 # Configuração de logging
 logger = setup_logging()
 
@@ -79,6 +82,18 @@ logger.info("✅ Indexação completa finalizada!")
 @app.route('/')
 def home():
     return "Assistente Jurídico de Contratos ativo!"
+
+# Registra endpoint de cron para trading automático (importa aqui para evitar dependências do Pinecone)
+try:
+    from app.cron_endpoint import register_cron_endpoint
+    if register_cron_endpoint:
+        register_cron_endpoint(app)
+        logger.info("✅ Endpoint de cron registrado: /cron/trading")
+except (ImportError, Exception) as e:
+    logger.warning(f"⚠️ Endpoint de cron não disponível: {e}")
+
+# Registra endpoint de cron para trading automático
+register_cron_endpoint(app)
 
 @app.route('/api/tools/search_contracts', methods=['POST'])
 def search_contracts():
@@ -215,6 +230,16 @@ async def process_message_async(phone_number: str, message_content: str):
                                         function_args.get("query", ""),
                                         function_args.get("k", 5)
                                     )
+                                elif function_name in ["buy_bitcoin", "sell_bitcoin"]:
+                                    # Funções de trading podem ter quantity opcional
+                                    quantity = function_args.get("quantity")
+                                    if quantity is not None:
+                                        result = function_to_call(quantity=quantity)
+                                    else:
+                                        result = function_to_call()
+                                elif function_name in ["analyze_bitcoin_market", "get_bitcoin_price", "get_portfolio_status"]:
+                                    # Funções sem argumentos
+                                    result = function_to_call()
                                 else:
                                     result = function_to_call(**function_args)
                                 
