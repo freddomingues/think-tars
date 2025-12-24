@@ -206,12 +206,26 @@ class EmailNotifier:
         </div>
 """
             
+            # Formata BTC com precisão adequada (mostra até 8 casas decimais se necessário)
+            btc_balance = data.get('btc_balance', 0)
+            usdt_balance = data.get('usdt_balance', 0)
+            
+            # Determina quantas casas decimais mostrar para BTC
+            if btc_balance == 0:
+                btc_format = "0.00000000"
+            elif btc_balance < 0.00001:
+                btc_format = f"{btc_balance:.8f}".rstrip('0').rstrip('.')
+            elif btc_balance < 0.01:
+                btc_format = f"{btc_balance:.6f}".rstrip('0').rstrip('.')
+            else:
+                btc_format = f"{btc_balance:.8f}".rstrip('0').rstrip('.')
+            
             html += f"""
         <div class="section">
             <h3>💼 Portfólio Atual</h3>
             <table>
-                <tr><td>Bitcoin (BTC):</td><td class="value">{data.get('btc_balance', 0):.8f}</td></tr>
-                <tr><td>USDT:</td><td>${data.get('usdt_balance', 0):,.2f}</td></tr>
+                <tr><td>Bitcoin (BTC):</td><td class="value">{btc_format}</td></tr>
+                <tr><td>USDT:</td><td>${usdt_balance:,.2f}</td></tr>
                 <tr><td>Valor Total:</td><td class="value">${data.get('total_value', 0):,.2f}</td></tr>
 """
             

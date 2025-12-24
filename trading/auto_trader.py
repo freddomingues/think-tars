@@ -210,18 +210,19 @@ class AutoTrader:
             recommendation = analysis_result.get('recommendation', {})
             action_taken = analysis_result.get('action_taken', {})
             
-            portfolio_value = portfolio.get('portfolio_value', {})
-            balance = portfolio.get('balance', {})
-            unrealized_pnl = portfolio.get('unrealized_pnl', {})
-            
-            # Obtém dados atualizados do portfólio após ação
+            # SEMPRE obtém dados atualizados diretamente da Binance antes de enviar email
             portfolio_after = self.agent.get_portfolio_status()
             if 'error' not in portfolio_after:
-                balance_after = portfolio_after.get('balance', balance)
-                portfolio_value_after = portfolio_after.get('portfolio_value', portfolio_value)
+                balance_after = portfolio_after.get('balance', {})
+                portfolio_value_after = portfolio_after.get('portfolio_value', {})
+                unrealized_pnl = portfolio_after.get('unrealized_pnl', {})
+                logger.info(f"📊 Saldos atualizados para email - BTC: {balance_after.get('btc', 0):.8f}, USDT: {balance_after.get('usdt', 0):.2f}")
             else:
-                balance_after = balance
-                portfolio_value_after = portfolio_value
+                # Se falhar, usa dados da análise mas loga o erro
+                logger.warning(f"⚠️ Erro ao obter portfólio atualizado: {portfolio_after.get('error')}, usando dados da análise")
+                balance_after = portfolio.get('balance', {})
+                portfolio_value_after = portfolio.get('portfolio_value', {})
+                unrealized_pnl = portfolio.get('unrealized_pnl', {})
             
             email_data = {
                 'timestamp': analysis_result.get('timestamp', datetime.now().isoformat()),

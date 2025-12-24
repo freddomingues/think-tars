@@ -310,20 +310,30 @@ class InvestmentAgent:
     
     def get_portfolio_status(self) -> Dict:
         """
-        Obtém status completo do portfólio.
+        Obtém status completo do portfólio diretamente da Binance.
+        Retorna valores exatos da carteira.
         
         Returns:
             Dicionário com informações do portfólio
         """
         try:
+            # Obtém saldos diretamente da Binance (sempre atualizado)
             balance = self.binance.get_btc_balance()
-            current_price = self.binance.get_btc_price()
+            if balance is None:
+                return {'error': 'Não foi possível obter saldos da Binance'}
             
+            current_price = self.binance.get_btc_price()
             if current_price is None:
                 return {'error': 'Não foi possível obter preço do BTC'}
             
-            btc_value = balance.get('btc', 0) * current_price
-            total_value = btc_value + balance.get('usdt', 0)
+            # Usa valores exatos da Binance
+            btc_balance = balance.get('btc', 0.0)
+            usdt_balance = balance.get('usdt', 0.0)
+            
+            btc_value = btc_balance * current_price
+            total_value = btc_value + usdt_balance
+            
+            logger.info(f"💰 Portfólio - BTC: {btc_balance:.8f}, USDT: {usdt_balance:.2f}, Total: ${total_value:.2f}")
             
             # Calcula lucro/prejuízo se houver entrada
             entry_price = self.entry_prices.get('last_entry')
@@ -335,11 +345,14 @@ class InvestmentAgent:
                 unrealized_pnl_percent = ((current_price - entry_price) / entry_price) * 100
             
             return {
-                'balance': balance,
+                'balance': {
+                    'btc': btc_balance,
+                    'usdt': usdt_balance
+                },
                 'current_price': current_price,
                 'portfolio_value': {
                     'btc_value_usd': btc_value,
-                    'usdt_balance': balance.get('usdt', 0),
+                    'usdt_balance': usdt_balance,
                     'total_usd': total_value
                 },
                 'unrealized_pnl': {

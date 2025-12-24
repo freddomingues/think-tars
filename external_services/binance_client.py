@@ -73,6 +73,7 @@ class BinanceClient:
     def get_btc_balance(self) -> Dict[str, float]:
         """
         Obtém o saldo de BTC e USDT na conta.
+        Retorna exatamente o que está na Binance, incluindo valores muito pequenos.
         
         Returns:
             Dicionário com 'btc' e 'usdt' ou None em caso de erro
@@ -82,21 +83,25 @@ class BinanceClient:
                 return {'btc': 0.001, 'usdt': 1000.0}
             
             account = self.client.get_account()
-            balances = {}
+            balances = {'btc': 0.0, 'usdt': 0.0}
             
+            # Itera por todos os balances, mesmo que sejam zero ou muito pequenos
             for balance in account['balances']:
                 asset = balance['asset']
                 free = float(balance['free'])
                 locked = float(balance['locked'])
                 total = free + locked
                 
-                if asset == 'BTC' and total > 0:
+                # Sempre atualiza, mesmo se for zero ou muito pequeno
+                if asset == 'BTC':
                     balances['btc'] = total
-                elif asset == 'USDT' and total > 0:
+                    logger.debug(f"💰 Saldo BTC: free={free:.8f}, locked={locked:.8f}, total={total:.8f}")
+                elif asset == 'USDT':
                     balances['usdt'] = total
+                    logger.debug(f"💰 Saldo USDT: free={free:.2f}, locked={locked:.2f}, total={total:.2f}")
             
-            balances.setdefault('btc', 0.0)
-            balances.setdefault('usdt', 0.0)
+            logger.info(f"📊 Saldos obtidos da Binance - BTC: {balances['btc']:.8f}, USDT: {balances['usdt']:.2f}")
+            return balances
             
             logger.info(f"💰 Saldo: {balances.get('btc', 0):.8f} BTC, ${balances.get('usdt', 0):.2f} USDT")
             return balances
