@@ -205,33 +205,50 @@ class AutoTrader:
     def _send_analysis_email(self, analysis_result: Dict):
         """Envia email com análise do mercado e resumo completo."""
         try:
-            portfolio = analysis_result.get('portfolio_status', {})
             market = analysis_result.get('market_analysis', {})
             recommendation = analysis_result.get('recommendation', {})
             action_taken = analysis_result.get('action_taken', {})
             
-            # SEMPRE obtém dados atualizados diretamente da Binance antes de enviar email
+            # SEMPRE obtém dados ATUALIZADOS diretamente da Binance no momento de enviar email
+            # Não usa valores em cache ou da análise anterior
+            logger.info("📧 Obtendo dados atualizados da Binance para email...")
+            
+            # Busca saldos atualizados diretamente
+            balance_fresh = self.agent.binance.get_btc_balance()
+            if balance_fresh is None:
+                logger.error("❌ Não foi possível obter saldos da Binance para email")
+                balance_fresh = {'btc': 0.0, 'usdt': 0.0}
+            
+            # Busca preço atualizado diretamente
+            current_price_fresh = self.agent.binance.get_btc_price()
+            if current_price_fresh is None:
+                logger.error("❌ Não foi possível obter preço atualizado, usando da análise")
+                current_price_fresh = market.get('current_price', 0)
+            
+            # Calcula valores atualizados
+            btc_balance = balance_fresh.get('btc', 0.0)
+            usdt_balance = balance_fresh.get('usdt', 0.0)
+            btc_value = btc_balance * current_price_fresh
+            total_value = btc_value + usdt_balance
+            
+            logger.info(f"📊 Dados atualizados para email:")
+            logger.info(f"   - Preço BTC: ${current_price_fresh:,.2f}")
+            logger.info(f"   - Saldo BTC: {btc_balance:.8f}")
+            logger.info(f"   - Saldo USDT: ${usdt_balance:,.2f}")
+            logger.info(f"   - Valor Total: ${total_value:,.2f}")
+            
+            # Obtém P&L não realizado se houver
             portfolio_after = self.agent.get_portfolio_status()
-            if 'error' not in portfolio_after:
-                balance_after = portfolio_after.get('balance', {})
-                portfolio_value_after = portfolio_after.get('portfolio_value', {})
-                unrealized_pnl = portfolio_after.get('unrealized_pnl', {})
-                logger.info(f"📊 Saldos atualizados para email - BTC: {balance_after.get('btc', 0):.8f}, USDT: {balance_after.get('usdt', 0):.2f}")
-            else:
-                # Se falhar, usa dados da análise mas loga o erro
-                logger.warning(f"⚠️ Erro ao obter portfólio atualizado: {portfolio_after.get('error')}, usando dados da análise")
-                balance_after = portfolio.get('balance', {})
-                portfolio_value_after = portfolio.get('portfolio_value', {})
-                unrealized_pnl = portfolio.get('unrealized_pnl', {})
+            unrealized_pnl = portfolio_after.get('unrealized_pnl', {}) if 'error' not in portfolio_after else {}
             
             email_data = {
-                'timestamp': analysis_result.get('timestamp', datetime.now().isoformat()),
-                'current_price': market.get('current_price', 0),
+                'timestamp': datetime.now().isoformat(),
+                'current_price': current_price_fresh,  # Preço atualizado
                 'rsi_1h': market.get('analysis_1h', {}).get('rsi', 0),
                 'rsi_4h': market.get('analysis_4h', {}).get('rsi', 0),
-                'btc_balance': balance_after.get('btc', 0),
-                'usdt_balance': balance_after.get('usdt', 0),
-                'total_value': portfolio_value_after.get('total_usd', 0),
+                'btc_balance': btc_balance,  # Saldo atualizado
+                'usdt_balance': usdt_balance,  # Saldo atualizado
+                'total_value': total_value,  # Valor total atualizado
                 'recommendation': recommendation,
                 'action_taken': action_taken,
                 'unrealized_pnl': unrealized_pnl

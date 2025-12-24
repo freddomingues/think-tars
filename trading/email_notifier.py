@@ -153,6 +153,7 @@ class EmailNotifier:
         <div class="section">
             <h3>📊 Análise do Mercado</h3>
             <p><strong>Preço Atual do Bitcoin:</strong> <span class="value">${data.get('current_price', 0):,.2f}</span></p>
+            <p><em>Preço obtido diretamente da Binance no momento do envio</em></p>
             <p><strong>RSI (1h):</strong> {data.get('rsi_1h', 0):.2f}</p>
             <p><strong>RSI (4h):</strong> {data.get('rsi_4h', 0):.2f}</p>
         </div>
@@ -223,6 +224,7 @@ class EmailNotifier:
             html += f"""
         <div class="section">
             <h3>💼 Portfólio Atual</h3>
+            <p><em>Valores obtidos diretamente da Binance no momento do envio</em></p>
             <table>
                 <tr><td>Bitcoin (BTC):</td><td class="value">{btc_format}</td></tr>
                 <tr><td>USDT:</td><td>${usdt_balance:,.2f}</td></tr>
