@@ -213,14 +213,21 @@ class AutoTrader:
             # Não usa valores em cache ou da análise anterior
             logger.info("📧 Obtendo dados atualizados da Binance para email...")
             
-            # Busca saldos atualizados diretamente
-            balance_fresh = self.agent.binance.get_btc_balance()
+            # Importa diretamente para garantir que usa a instância mais recente
+            from external_services.binance_client import binance_client
+            
+            # Verifica se está em modo de teste
+            if binance_client.test_mode:
+                logger.warning("⚠️ Cliente Binance em modo de teste! Verifique as credenciais.")
+            
+            # Busca saldos atualizados diretamente da instância global
+            balance_fresh = binance_client.get_btc_balance()
             if balance_fresh is None:
                 logger.error("❌ Não foi possível obter saldos da Binance para email")
                 balance_fresh = {'btc': 0.0, 'usdt': 0.0}
             
-            # Busca preço atualizado diretamente
-            current_price_fresh = self.agent.binance.get_btc_price()
+            # Busca preço atualizado diretamente da instância global
+            current_price_fresh = binance_client.get_btc_price()
             if current_price_fresh is None:
                 logger.error("❌ Não foi possível obter preço atualizado, usando da análise")
                 current_price_fresh = market.get('current_price', 0)

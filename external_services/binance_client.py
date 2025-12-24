@@ -102,9 +102,6 @@ class BinanceClient:
             
             logger.info(f"📊 Saldos obtidos da Binance - BTC: {balances['btc']:.8f}, USDT: {balances['usdt']:.2f}")
             return balances
-            
-            logger.info(f"💰 Saldo: {balances.get('btc', 0):.8f} BTC, ${balances.get('usdt', 0):.2f} USDT")
-            return balances
         except Exception as e:
             logger.error(f"❌ Erro ao obter saldo: {e}")
             return {'btc': 0.0, 'usdt': 0.0}
