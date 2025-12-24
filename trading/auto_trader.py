@@ -90,18 +90,21 @@ class AutoTrader:
                     action_result = self._execute_action(action, recommendation, portfolio_status)
                     result['action_taken'] = action_result
                     
-                    # Envia email sobre a ação executada
+                    # Envia email APENAS quando uma ação for executada com sucesso
                     if action_result.get('success'):
                         self._send_action_email(action_result, market_analysis, portfolio_status)
+                        logger.info(f"📧 Email enviado após execução de {action}")
+                    else:
+                        logger.info(f"⚠️ Ação {action} não executada, email não enviado")
                 else:
                     logger.info(f"⚠️ Modo de análise apenas - ação {action} não executada")
                     result['action_taken'] = {'mode': 'analysis_only', 'action': action}
             else:
                 logger.info(f"⏸️ Aguardando - ação: {action}, confiança: {confidence:.0%}")
                 result['action_taken'] = {'action': 'HOLD', 'reason': 'Confiança insuficiente ou sem sinal claro'}
+                logger.info(f"📧 Email não enviado - nenhuma ação executada (HOLD)")
             
-            # Sempre envia email com análise (mesmo que não tenha ação)
-            self._send_analysis_email(result)
+            # NÃO envia email quando não há ação - apenas quando compra/venda é executada
             
             return result
         
@@ -202,35 +205,33 @@ class AutoTrader:
             
             return error_result
     
-    def _send_analysis_email(self, analysis_result: Dict):
-        """Envia email com análise do mercado e resumo completo."""
+    # Método removido - emails são enviados apenas quando há ação executada
+    # def _send_analysis_email(self, analysis_result: Dict):
+    #     Este método foi removido. Emails são enviados apenas quando compra/venda é executada.
+    
+    def _send_action_email(self, action_result: Dict, market_analysis: Dict, portfolio_status: Dict):
+        """Envia email sobre ação executada (compra/venda) com resumo completo."""
         try:
-            market = analysis_result.get('market_analysis', {})
-            recommendation = analysis_result.get('recommendation', {})
-            action_taken = analysis_result.get('action_taken', {})
+            action = action_result.get('action')
             
-            # SEMPRE obtém dados ATUALIZADOS diretamente da Binance no momento de enviar email
-            # Não usa valores em cache ou da análise anterior
-            logger.info("📧 Obtendo dados atualizados da Binance para email...")
-            
+            # Obtém dados atualizados diretamente da Binance
             # Importa diretamente para garantir que usa a instância mais recente
             from external_services.binance_client import binance_client
             
-            # Verifica se está em modo de teste
+            # Verifica se está em modo de teste - se estiver, não envia email
             if binance_client.test_mode:
-                logger.warning("⚠️ Cliente Binance em modo de teste! Verifique as credenciais.")
+                logger.error("❌ Cliente Binance em modo de teste! Email não enviado. Verifique as credenciais.")
+                return
             
-            # Busca saldos atualizados diretamente da instância global
             balance_fresh = binance_client.get_btc_balance()
+            current_price_fresh = binance_client.get_btc_price()
+            
             if balance_fresh is None:
                 logger.error("❌ Não foi possível obter saldos da Binance para email")
-                balance_fresh = {'btc': 0.0, 'usdt': 0.0}
-            
-            # Busca preço atualizado diretamente da instância global
-            current_price_fresh = binance_client.get_btc_price()
+                balance_fresh = portfolio_status.get('balance', {})
             if current_price_fresh is None:
-                logger.error("❌ Não foi possível obter preço atualizado, usando da análise")
-                current_price_fresh = market.get('current_price', 0)
+                logger.error("❌ Não foi possível obter preço atualizado")
+                current_price_fresh = market_analysis.get('current_price', 0)
             
             # Calcula valores atualizados
             btc_balance = balance_fresh.get('btc', 0.0)
@@ -238,79 +239,39 @@ class AutoTrader:
             btc_value = btc_balance * current_price_fresh
             total_value = btc_value + usdt_balance
             
-            logger.info(f"📊 Dados atualizados para email:")
+            logger.info(f"📊 Dados para email (após {action}):")
             logger.info(f"   - Preço BTC: ${current_price_fresh:,.2f}")
             logger.info(f"   - Saldo BTC: {btc_balance:.8f}")
             logger.info(f"   - Saldo USDT: ${usdt_balance:,.2f}")
             logger.info(f"   - Valor Total: ${total_value:,.2f}")
             
-            # Obtém P&L não realizado se houver
+            # Obtém recomendação atual
+            recommendation = market_analysis.get('recommendation', {})
+            
+            # Obtém P&L não realizado
             portfolio_after = self.agent.get_portfolio_status()
             unrealized_pnl = portfolio_after.get('unrealized_pnl', {}) if 'error' not in portfolio_after else {}
             
+            # Prepara dados para email com resumo completo
             email_data = {
                 'timestamp': datetime.now().isoformat(),
-                'current_price': current_price_fresh,  # Preço atualizado
-                'rsi_1h': market.get('analysis_1h', {}).get('rsi', 0),
-                'rsi_4h': market.get('analysis_4h', {}).get('rsi', 0),
-                'btc_balance': btc_balance,  # Saldo atualizado
-                'usdt_balance': usdt_balance,  # Saldo atualizado
-                'total_value': total_value,  # Valor total atualizado
+                'current_price': current_price_fresh,
+                'rsi_1h': market_analysis.get('analysis_1h', {}).get('rsi', 0),
+                'rsi_4h': market_analysis.get('analysis_4h', {}).get('rsi', 0),
+                'btc_balance': btc_balance,
+                'usdt_balance': usdt_balance,
+                'total_value': total_value,
                 'recommendation': recommendation,
-                'action_taken': action_taken,
+                'action_taken': action_result,
                 'unrealized_pnl': unrealized_pnl
             }
             
-            # Define assunto baseado na ação
-            if action_taken.get('success') and action_taken.get('action') in ['BUY', 'SELL']:
-                subject = f"🤖 Trading Automático - {action_taken.get('action')} Executada"
-            else:
-                subject = "🤖 Trading Automático - Análise de Mercado"
-            
+            # Envia email de análise completa (que inclui a ação executada)
+            subject = f"🤖 Trading Automático - {action} Executada"
             email_notifier.send_notification('analysis', email_data, subject_override=subject)
-            logger.info(f"📧 Email enviado com resumo completo")
+            logger.info(f"📧 Email enviado com resumo da ação {action} executada")
         except Exception as e:
-            logger.error(f"❌ Erro ao enviar email de análise: {e}")
-    
-    def _send_action_email(self, action_result: Dict, market_analysis: Dict, portfolio_status: Dict):
-        """Envia email sobre ação executada (compra/venda)."""
-        try:
-            action = action_result.get('action')
-            result = action_result.get('result', {})
-            order = result.get('order', {})
-            
-            portfolio_value = portfolio_status.get('portfolio_value', {})
-            balance = portfolio_status.get('balance', {})
-            
-            if action == 'BUY':
-                email_data = {
-                    'timestamp': datetime.now().isoformat(),
-                    'order': order,
-                    'quantity_btc': result.get('quantity_btc', 0),
-                    'value_usd': result.get('total_usd', 0),
-                    'price': result.get('price', 0),
-                    'btc_balance_after': balance.get('btc', 0),
-                    'usdt_balance_after': balance.get('usdt', 0),
-                    'total_value_after': portfolio_value.get('total_usd', 0)
-                }
-                email_notifier.send_notification('buy', email_data)
-            
-            elif action == 'SELL':
-                email_data = {
-                    'timestamp': datetime.now().isoformat(),
-                    'order': order,
-                    'quantity_btc': result.get('quantity_btc', 0),
-                    'value_usd': result.get('total_usd', 0),
-                    'price': result.get('price', 0),
-                    'entry_price': result.get('entry_price', 0),
-                    'profit_percent': result.get('profit_percent', 0),
-                    'btc_balance_after': balance.get('btc', 0),
-                    'usdt_balance_after': balance.get('usdt', 0),
-                    'total_value_after': portfolio_value.get('total_usd', 0)
-                }
-                email_notifier.send_notification('sell', email_data)
-        except Exception as e:
-            logger.error(f"❌ Erro ao enviar email de ação: {e}")
+            logger.error(f"❌ Erro ao enviar email de ação: {e}", exc_info=True)
     
     def get_summary(self, analysis_result: Dict) -> str:
         """

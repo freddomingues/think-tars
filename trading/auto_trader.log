@@ -158,3 +158,4 @@
 2025-12-24 19:33:41,394 - trading.auto_trader - INFO - 🤖 AutoTrader inicializado (auto_execute=False)
 2025-12-24 19:33:41,689 - external_services.binance_client - INFO - 📊 Saldos obtidos da Binance - BTC: 0.00000989, USDT: 15.22
 2025-12-24 19:33:42,000 - external_services.binance_client - INFO - 📊 Preço atual do BTC: $87,908.20
+2025-12-24 19:37:29,581 - trading.auto_trader - INFO - 🤖 AutoTrader inicializado (auto_execute=False)
