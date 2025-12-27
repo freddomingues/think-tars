@@ -159,3 +159,111 @@
 2025-12-24 19:33:41,689 - external_services.binance_client - INFO - 📊 Saldos obtidos da Binance - BTC: 0.00000989, USDT: 15.22
 2025-12-24 19:33:42,000 - external_services.binance_client - INFO - 📊 Preço atual do BTC: $87,908.20
 2025-12-24 19:37:29,581 - trading.auto_trader - INFO - 🤖 AutoTrader inicializado (auto_execute=False)
+2025-12-25 10:00:37,289 - __main__ - INFO - ============================================================
+2025-12-25 10:00:37,289 - __main__ - INFO - 🤖 INICIANDO TRADING AUTOMÁTICO
+2025-12-25 10:00:37,290 - __main__ - INFO - ============================================================
+2025-12-25 10:00:37,290 - __main__ - INFO - 🤖 AutoTrader inicializado (auto_execute=True)
+2025-12-25 10:00:37,290 - __main__ - INFO - 📊 Iniciando análise do mercado...
+2025-12-25 10:00:37,290 - trading.investment_agent - INFO - 💰 Portfólio - BTC: 0.00100000, USDT: 1000.00, Total: $1045.00
+2025-12-25 10:00:37,290 - __main__ - INFO - 📈 Análise concluída:
+2025-12-25 10:00:37,290 - __main__ - INFO -    - Ação recomendada: HOLD
+2025-12-25 10:00:37,290 - __main__ - INFO -    - Confiança: 50%
+2025-12-25 10:00:37,291 - __main__ - INFO -    - Preço atual: $45,000.00
+2025-12-25 10:00:37,291 - __main__ - INFO - ⏸️ Aguardando - ação: HOLD, confiança: 50%
+2025-12-25 10:00:37,291 - __main__ - INFO - 📧 Email não enviado - nenhuma ação executada (HOLD)
+2025-12-25 10:00:37,291 - __main__ - INFO - 
+╔═══════════════════════════════════════════════════════════╗
+║           RELATÓRIO DE TRADING AUTOMÁTICO                 ║
+╚═══════════════════════════════════════════════════════════╝
+
+📅 Data/Hora: 2025-12-25T10:00:37.291087
+
+💰 PORTFÓLIO:
+   - Valor Total: $1,045.00
+   - BTC: 0.00100000
+   - USDT: $1,000.00
+
+📊 MERCADO:
+   - Preço BTC: $45,000.00
+   - RSI (1h): 59.09
+   - RSI (4h): 59.09
+
+🎯 RECOMENDAÇÃO:
+   - Ação: HOLD
+   - Confiança: 50%
+   - Motivo: Aguardando sinal mais claro
+
+⚡ AÇÃO EXECUTADA:
+   ⏸️ Confiança insuficiente ou sem sinal claro
+
+2025-12-25 10:00:37,291 - __main__ - INFO - ============================================================
+2025-12-25 10:00:37,291 - __main__ - INFO - ✅ TRADING AUTOMÁTICO FINALIZADO
+2025-12-25 10:00:37,291 - __main__ - INFO - ============================================================
+2025-12-27 15:00:05,451 - __main__ - INFO - ============================================================
+2025-12-27 15:00:05,452 - __main__ - INFO - 🤖 INICIANDO TRADING AUTOMÁTICO
+2025-12-27 15:00:05,452 - __main__ - INFO - ============================================================
+2025-12-27 15:00:05,452 - __main__ - INFO - 🤖 AutoTrader inicializado (auto_execute=True)
+2025-12-27 15:00:05,453 - __main__ - INFO - 📊 Iniciando análise do mercado...
+2025-12-27 15:00:05,453 - trading.investment_agent - INFO - 💰 Portfólio - BTC: 0.00100000, USDT: 1000.00, Total: $1045.00
+2025-12-27 15:00:05,453 - __main__ - INFO - 📈 Análise concluída:
+2025-12-27 15:00:05,453 - __main__ - INFO -    - Ação recomendada: HOLD
+2025-12-27 15:00:05,453 - __main__ - INFO -    - Confiança: 50%
+2025-12-27 15:00:05,453 - __main__ - INFO -    - Preço atual: $45,000.00
+2025-12-27 15:00:05,454 - __main__ - INFO - ⏸️ Aguardando - ação: HOLD, confiança: 50%
+2025-12-27 15:00:05,454 - __main__ - INFO - 📧 Email não enviado - nenhuma ação executada (HOLD)
+2025-12-27 15:00:05,454 - __main__ - INFO - 
+╔═══════════════════════════════════════════════════════════╗
+║           RELATÓRIO DE TRADING AUTOMÁTICO                 ║
+╚═══════════════════════════════════════════════════════════╝
+
+📅 Data/Hora: 2025-12-27T15:00:05.454036
+
+💰 PORTFÓLIO:
+   - Valor Total: $1,045.00
+   - BTC: 0.00100000
+   - USDT: $1,000.00
+
+📊 MERCADO:
+   - Preço BTC: $45,000.00
+   - RSI (1h): 59.09
+   - RSI (4h): 59.09
+
+🎯 RECOMENDAÇÃO:
+   - Ação: HOLD
+   - Confiança: 50%
+   - Motivo: Aguardando sinal mais claro
+
+⚡ AÇÃO EXECUTADA:
+   ⏸️ Confiança insuficiente ou sem sinal claro
+
+2025-12-27 15:00:05,454 - __main__ - INFO - ============================================================
+2025-12-27 15:00:05,454 - __main__ - INFO - ✅ TRADING AUTOMÁTICO FINALIZADO
+2025-12-27 15:00:05,454 - __main__ - INFO - ============================================================
+2025-12-27 15:45:46,056 - trading.auto_trader - INFO - 🤖 AutoTrader inicializado (auto_execute=False)
+2025-12-27 15:45:46,056 - trading.auto_trader - INFO - 📊 Iniciando análise do mercado...
+2025-12-27 15:45:46,057 - trading.investment_agent - INFO - 💰 Portfólio - BTC: 0.00100000, USDT: 1000.00, Total: $1045.00
+2025-12-27 15:45:46,066 - trading.auto_trader - INFO - 📈 Análise concluída:
+2025-12-27 15:45:46,066 - trading.auto_trader - INFO -    - Ação recomendada: HOLD
+2025-12-27 15:45:46,066 - trading.auto_trader - INFO -    - Confiança: 50%
+2025-12-27 15:45:46,066 - trading.auto_trader - INFO -    - Preço atual: $45,000.00
+2025-12-27 15:45:46,066 - trading.auto_trader - INFO - ⏸️ Aguardando - ação: HOLD, confiança: 50%
+2025-12-27 15:45:46,066 - trading.auto_trader - INFO - 📧 Email não enviado - nenhuma ação executada (HOLD)
+2025-12-27 15:46:51,351 - external_services.binance_client - INFO - 📊 Saldos obtidos da Binance - BTC: 0.00000989, USDT: 15.22
+2025-12-27 15:46:51,650 - external_services.binance_client - INFO - 📊 Preço atual do BTC: $87,522.08
+2025-12-27 15:46:51,650 - trading.auto_trader - INFO - 🤖 AutoTrader inicializado (auto_execute=False)
+2025-12-27 15:46:51,650 - trading.auto_trader - INFO - 📊 Iniciando análise do mercado...
+2025-12-27 15:46:51,958 - external_services.binance_client - INFO - 📊 Saldos obtidos da Binance - BTC: 0.00000989, USDT: 15.22
+2025-12-27 15:46:52,260 - external_services.binance_client - INFO - 📊 Preço atual do BTC: $87,522.08
+2025-12-27 15:46:52,261 - trading.investment_agent - INFO - 💰 Portfólio - BTC: 0.00000989, USDT: 15.22, Total: $16.09
+2025-12-27 15:46:52,562 - external_services.binance_client - INFO - 📊 Preço atual do BTC: $87,522.08
+2025-12-27 15:46:52,873 - external_services.binance_client - INFO - 📈 Obtidas 100 velas de 1h
+2025-12-27 15:46:53,178 - external_services.binance_client - INFO - 📈 Obtidas 50 velas de 4h
+2025-12-27 15:46:53,489 - external_services.binance_client - INFO - 📊 Saldos obtidos da Binance - BTC: 0.00000989, USDT: 15.22
+2025-12-27 15:46:53,489 - trading.auto_trader - INFO - 📈 Análise concluída:
+2025-12-27 15:46:53,489 - trading.auto_trader - INFO -    - Ação recomendada: HOLD
+2025-12-27 15:46:53,490 - trading.auto_trader - INFO -    - Confiança: 50%
+2025-12-27 15:46:53,490 - trading.auto_trader - INFO -    - Preço atual: $87,522.08
+2025-12-27 15:46:53,490 - trading.auto_trader - INFO - ⏸️ Aguardando - ação: HOLD, confiança: 50%
+2025-12-27 15:46:53,490 - trading.auto_trader - INFO - 📧 Email não enviado - nenhuma ação executada (HOLD)
+2025-12-27 15:46:53,786 - external_services.binance_client - INFO - 📊 Saldos obtidos da Binance - BTC: 0.00000989, USDT: 15.22
+2025-12-27 15:46:54,086 - external_services.binance_client - INFO - 📊 Preço atual do BTC: $87,522.08
