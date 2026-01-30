@@ -1,1 +1,12 @@
 .env
+venv/
+__pycache__/
+*.pyc
+*.pyo
+frontend/node_modules/
+frontend/dist/
+document_cache.json
+*.log
+logs/
+.DS_Store
+get-pip.py

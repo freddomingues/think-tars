@@ -1,5 +1,7 @@
 # 🚀 Sistema de Assistente Jurídico Inteligente com IA
 
+> **Nota:** Este projeto **não utiliza mais AWS** (S3, DynamoDB). A base de conhecimento vem dos **arquivos que os clientes fazem upload na aplicação** (demos) e do **Pinecone**. Threads e conversas são armazenados **em memória**.
+
 ## 📋 Sumário
 
 1. [Visão Geral](#visão-geral)
@@ -18,11 +20,11 @@
 
 ## 🎯 Visão Geral
 
-Este projeto implementa um **sistema completo de assistente pessoal inteligente** para WhatsApp, especializado em fornecer suporte automatizado para afiliados através de múltiplos agentes de IA. O sistema utiliza **Large Language Models (LLMs)** da OpenAI, busca vetorial com **Pinecone**, e uma arquitetura distribuída na AWS e Render para oferecer respostas precisas e contextuais sobre contratos, FAQs e análises de dados.
+Este projeto implementa um **sistema de assistentes de IA** com múltiplos agentes. Utiliza **Large Language Models (LLMs)** da OpenAI, busca vetorial com **Pinecone**, e os **arquivos enviados pelos clientes na aplicação** como base de conhecimento. Deploy na Render.
 
 ### Objetivos Principais
 
-- **Automatização de Suporte**: Reduzir carga de trabalho manual respondendo dúvidas frequentes via WhatsApp
+- **Assistentes conversacionais**: Múltiplos agentes especializados (jurídico, investimento, etc.)
 - **Base de Conhecimento Privada**: Utilizar documentos internos (contratos e FAQs) como fonte de verdade
 - **Análise Inteligente**: Prover análises de dados e métricas através de linguagem natural
 - **Monitoramento de Sentimento**: Analisar o estado emocional das conversas para melhorar o atendimento
@@ -34,7 +36,6 @@ Este projeto implementa um **sistema completo de assistente pessoal inteligente*
 - **Busca Vetorial**: Pinecone (namespaces separados para contratos e FAQs)
 - **Armazenamento**: AWS S3 (documentos), AWS DynamoDB (conversas e threads)
 - **Processamento**: Python 3.12, Flask, asyncio
-- **Integração WhatsApp**: Zatten API + Meta WhatsApp Business API
 - **Deploy**: Render (aplicação principal)
 
 ---
@@ -45,63 +46,35 @@ Este projeto implementa um **sistema completo de assistente pessoal inteligente*
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         WhatsApp                                 │
-└────────────────────────────┬────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                       Zatten Platform                            │
-│  (Orquestração de mensagens e ferramentas externas)              │
-└────────────────────────────┬────────────────────────────────────┘
-                             │
-                             ▼
-┌─────────────────────────────────────────────────────────────────┐
 │                  Render (Aplicação Flask)                       │
 │  ┌──────────────────────────────────────────────────────────┐  │
-│  │  app/main.py (Webhook Handler)                            │  │
-│  │  ├── Queue de mensagens (async processing)                │  │
-│  │  ├── Gerenciamento de threads OpenAI                      │  │
-│  │  └── Orquestração de tools                                │  │
+│  │  app/main.py                                              │  │
+│  │  ├── API de demos (/api/demos)                            │  │
+│  │  ├── Tools HTTP (search_contracts, search_faqs)           │  │
+│  │  └── Frontend em /demos                                   │  │
 │  └──────────────────────────────────────────────────────────┘  │
 │  ┌──────────────────────────────────────────────────────────┐  │
 │  │  OpenAI Assistant API                                     │  │
-│  │  ├── Thread Management (contexto de conversa)            │  │
+│  │  ├── Thread Management (contexto de conversa)             │  │
 │  │  ├── Tool Selection (decide qual tool usar)               │  │
-│  │  └── Response Generation                                  │  │
+│  │  └── Response Generation                                   │  │
 │  └──────────────────────────────────────────────────────────┘  │
 └────────────────────────────┬────────────────────────────────────┘
                              │
                 ┌────────────┴────────────┐
                 ▼                         ▼
 ┌───────────────────────────┐  ┌──────────────────────────┐
-│  AWS S3 (Documentos)      │  │  AWS DynamoDB            │
-│  ├── contratos/           │  │  ├── Threads (contexto)  │
-│  ├── faqs/                │  │  ├── Conversations       │
-│  └── base_dados_mock.xlsx │  │  ├── Messages            │
-└───────────────────────────┘  │  └── SentimentAnalysis    │
-                               └──────────────────────────┘
-                ┌────────────┴────────────┐
-                ▼                         ▼
-┌───────────────────────────┐  ┌──────────────────────────┐
-│  Pinecone (Vector DB)     │  │  Dashboard Flask        │
-│  ├── namespace: contracts │  │  ├── Visualização        │
-│  └── namespace: faqs       │  │  ├── WebSocket (real-time)│
-└───────────────────────────┘  │  └── Analytics           │
-                               └──────────────────────────┘
+│  Pinecone (Vector DB)     │  │  Upload de PDF (demos)   │
+│  ├── namespace: contracts │  │  Arquivos dos clientes   │
+│  └── namespace: faqs      │  │  → OpenAI File Search    │
+└───────────────────────────┘  └──────────────────────────┘
 ```
 
 ### Fluxo de Dados Global
 
-1. **Ingestão**: Scripts de ingestão processam documentos do S3 e indexam no Pinecone
-2. **Recepção**: Zatten recebe mensagem WhatsApp e envia webhook para `/webhook/zatten`
-3. **Processamento**: `main.py` processa mensagem assincronamente via queue
-4. **Contexto**: Recupera/cria thread no DynamoDB para manter histórico
-5. **Análise**: Sistema de sentimento analisa mensagem do usuário
-6. **Decisão**: OpenAI Assistant decide quais tools usar baseado na pergunta
-7. **Execução**: Tools executam buscas no Pinecone ou análises em planilhas
-8. **Resposta**: Assistant gera resposta contextualizada
-9. **Persistência**: Mensagens e análises são salvas no DynamoDB
-10. **Envio**: Resposta enviada via Meta API com metadata de sentimento
+1. **Base de conhecimento**: Arquivos enviados pelos clientes na aplicação (upload de PDF) + Pinecone
+2. **Demos**: Frontend em `/demos` → API de demos → OpenAI Assistant → resposta no chat
+3. **Tools**: Assistant usa search_contracts e search_faqs (Pinecone) quando necessário
 
 ---
 
@@ -234,7 +207,7 @@ Retorna top 3 chunks mais similares
 Assistant gera resposta baseada nos chunks
          │
          ▼
-Resposta enviada ao usuário via WhatsApp
+Resposta exibida no chat (demos)
 ```
 
 #### Instruções do Assistente
@@ -736,47 +709,7 @@ O assistente adapta seu tom baseado no sentimento detectado:
 **3.4.4. Envio de Metadata com Sentimento**
 
 ```275:277:app/main.py
-                    # Envia resposta com análise de sentimento da mensagem original
-                    send_meta_message(response_text, sentiment_data=sentiment_analysis)
-                    logger.info(f"📤 [ZATTEN] Resposta enviada para {phone_number} com sentimento: {sentiment_analysis['sentiment']}")
-```
-
-**Função de Envio com Metadata:**
-
-```28:60:external_services/zatten_client.py
-def send_meta_message(text="hello, world", sentiment_data=None):
-
-    page_id = "1823092665253620"
-    psid = "5514998309606"
-    acess_token = "EAAQUB0WDUl4BPJOVrbKzyX4MkwiZAj3EvvbRgaJzhvhJ6rMswJuOaNA2F3N4c3xAHiGcZBdrlxsFe0ZAZBfv3ZCwOFhf9ZBBhPZCx0jje2wnCF6QCABdn2nDZA3K2deOa70N97xcy8MYFtdtP1Fx0XVJ503FNqMTjZA6c67GGWuce1chya0QdSP09NtwYg61PVWbV6nmbcGDmOplhMxurZBMuiDZBPNHFeZCVcK5334Xl26X07aZCRz8ZCiEfzrXUIqZCfh"
-
-    url = f"https://graph.facebook.com/v23.0/{page_id}/messages"
-    
-    payload = {
-        "recipient": {"id": psid},
-        "messaging_type": "RESPONSE",
-        "message": {"text": text}
-    }
-    
-    # Adiciona análise de sentimento aos metadata se disponível
-    if sentiment_data:
-        payload["messaging_type"] = "MESSAGE_TAG"
-        # Adiciona sentimento como metadata
-        sentiment = sentiment_data.get('sentiment', 'neutro')
-        confidence = sentiment_data.get('confidence', 0.0)
-        payload["message"]["metadata"] = f"SENTIMENT_{sentiment.upper()}_{confidence:.0%}"
-    
-    params = {
-        "access_token": acess_token
-    }
-    
-    response = requests.post(url, params=params, json=payload)
-    
-    # Retorna o JSON de resposta ou mensagem de erro
-    try:
-        return response.json()
-    except Exception:
-        return {"error": response.text}
+                    # Resposta retornada ao cliente (demos) ou exibida no chat
 ```
 
 **3.4.5. Análise de Sentimento de Conversa Completa**
@@ -1089,80 +1022,32 @@ Garante que mensagens do mesmo usuário sejam processadas sequencialmente.
 
 ## 🔄 Fluxos Operacionais
 
-### 5.1. Fluxo Completo de uma Mensagem
+### 5.1. Fluxo de Demos (conversa no chat)
 
 ```
-1. Usuário envia mensagem via WhatsApp
+1. Usuário acessa /demos e seleciona assistente (opcional: upload de PDF)
          │
          ▼
-2. Zatten recebe e envia webhook POST → /webhook/zatten
+2. Frontend chama API de demos (conversations, messages)
          │
          ▼
-3. app/main.py valida e enfileira mensagem
+3. Backend adiciona mensagem à thread OpenAI e cria Run do Assistant
          │
          ▼
-4. Worker background processa mensagem assincronamente
+4. Assistant processa e pode solicitar tools
          │
-         ├─► 4a. Recupera/cria thread_id no DynamoDB
-         ├─► 4b. Analisa sentimento da mensagem
-         ├─► 4c. Salva mensagem e análise no DynamoDB
-         │
-         ▼
-5. Adiciona mensagem à thread OpenAI
+         ├─► search_contracts → Pinecone (namespace: contracts)
+         ├─► search_faqs → Pinecone (namespace: faqs)
+         └─► (outras tools: trading, etc.)
          │
          ▼
-6. Cria Run do Assistant
-         │
-         ▼
-7. Assistant processa e pode solicitar tools
-         │
-         ├─► 7a. Tool: search_contracts → Pinecone (namespace: contracts)
-         ├─► 7b. Tool: search_faqs → Pinecone (namespace: faqs)
-         └─► 7c. Tool: query_spreadsheet → S3 + pandas
-         │
-         ▼
-8. Assistant gera resposta final baseada nos resultados
-         │
-         ▼
-9. Resposta salva no DynamoDB
-         │
-         ▼
-10. Resposta enviada via Meta API (com metadata de sentimento)
-         │
-         ▼
-11. Usuário recebe resposta no WhatsApp
+5. Assistant gera resposta; frontend exibe no chat
 ```
 
-### 5.2. Fluxo de Ingestão de Documentos
+### 5.2. Base de Conhecimento
 
-**Contratos:**
-
-```
-1. Script index_all_contracts() executado no startup
-         │
-         ▼
-2. Lista PDFs na raiz do S3 (exclui faqs/)
-         │
-         ▼
-3. Filtra documentos não processados (cache)
-         │
-         ▼
-4. Para cada PDF:
-   ├─► Baixa do S3
-   ├─► Extrai texto (pypdf)
-   ├─► Divide em chunks (500 chars, overlap 50)
-   ├─► Gera embeddings (OpenAI)
-   └─► Indexa no Pinecone (namespace: contracts)
-         │
-         ▼
-5. Marca documento como processado no cache
-```
-
-**FAQs:**
-
-Similar, mas:
-- Processa pasta `faqs/`
-- Namespace: `faqs`
+- **Upload de PDF (demos):** Arquivo enviado pelo cliente é processado e indexado em um vector store da OpenAI (File Search) para aquela conversa.
+- **Pinecone:** Namespaces `contracts` e `faqs` podem ser alimentados por outros fluxos; as tools `search_contracts` e `search_faqs` consultam o Pinecone.
 
 ### 5.3. Fluxo de Tool Call
 
@@ -1273,11 +1158,11 @@ web: gunicorn --bind 0.0.0.0:$PORT app.main:app
 - Auto-deploy via Git push
 
 **Endpoints Expostos:**
-- `POST /webhook/zatten`: Webhook principal do Zatten
-- `POST /api/tools/search_contracts`: Tool de busca de contratos
-- `POST /api/tools/search_faqs`: Tool de busca de FAQs
-- `POST /api/tools/query_spreadsheet`: Tool de análise de dados
 - `GET /`: Health check
+- `GET /demos`, `/demos/`: Frontend de demos
+- `GET /api/demos/assistants`, `POST /api/demos/upload-pdf`, `POST /api/demos/conversations`, etc.
+- `POST /api/tools/search_contracts`: Tool de busca de contratos (Pinecone)
+- `POST /api/tools/search_faqs`: Tool de busca de FAQs (Pinecone)
 
 ### 6.2. AWS S3
 
@@ -1350,6 +1235,30 @@ s3://gen-ai-contratos/
 - Flask-SocketIO para WebSocket
 - Frontend: HTML/JS (templates/dashboard.html)
 
+### 6.6. Demos — site de demonstração
+
+Site para **demonstrar os assistentes de IA** via chat na web com **suporte a upload de PDFs** para criar bases de conhecimento personalizadas.
+
+- **Backend:** `backend/` — API em `/api/demos` (listar assistentes, criar conversa, enviar mensagem, upload de PDF). Blueprint Flask registrado em `app/main.py`.
+- **Frontend:** `frontend/` — SPA React + Vite. Build: `cd frontend && npm install && npm run build`. Saída em `frontend/dist`.
+- **Acesso:** Com a aplicação Flask rodando e `frontend/dist` presente, o site é servido em **`/demos`** (ex.: `http://localhost:5004/demos/`). A raiz `/` exibe um link para as demos.
+
+**Endpoints da API de demos:**
+- `GET /api/demos/assistants` — lista assistentes disponíveis
+- `POST /api/demos/upload-pdf` — faz upload de PDF e cria vector store (multipart/form-data: `file`, `agent_id`)
+- `POST /api/demos/conversations` — cria conversa (body opcional: `{ "agent_id": "juridico", "vector_store_id": "vs_xxx" }`)
+- `POST /api/demos/conversations/<id>/messages` — envia mensagem (body: `{ "content": "..." }`)
+- `DELETE /api/demos/conversations/<id>` — deleta conversa e limpa recursos (assistente customizado e vector store)
+
+**Funcionalidades:**
+- **Seleção de Assistente:** Escolha entre os assistentes disponíveis no registry (jurídico, investimento, etc.)
+- **Upload de PDF:** Faça upload de um PDF para criar uma base de conhecimento específica para a conversa
+- **Vector Store Dinâmico:** Cada PDF é processado e indexado em um vector store exclusivo usando a API de File Search da OpenAI
+- **Assistente Customizado:** Quando um PDF é enviado, um assistente específico é criado com acesso ao vector store
+- **Limpeza Automática:** Recursos são limpos ao trocar de assistente ou encerrar a conversa
+
+Ver `docs/ARCHITECTURE.md` e as skills **backend-developer** e **frontend-developer** para detalhes.
+
 ---
 
 ## ⚙️ Configuração
@@ -1364,30 +1273,11 @@ OPENAI_API_KEY=sk-...
 LLM_MODEL=gpt-4o
 EMBEDDING_MODEL=text-embedding-ada-002
 
-# AWS
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
-AWS_REGION=us-east-2
-S3_BUCKET_NAME=gen-ai-contratos
-S3_CONTRACTS_PREFIX=contratos/
-S3_FAQS_PREFIX=faqs/
-
-# DynamoDB
-DYNAMODB_TABLE_NAME=AssistantUserThreads
-
-# Pinecone
+# Pinecone (base de conhecimento)
 PINECONE_API_KEY=...
 PINECONE_ENVIRONMENT=us-east-1
 PINECONE_INDEX_NAME=genai-documents
 
-# Zatten
-ZATTEN_API_KEY=...
-ZATTEN_ATTENDANT_ID=...
-
-# Meta WhatsApp (no código - mover para .env)
-META_PAGE_ID=...
-META_PSID=...
-META_ACCESS_TOKEN=...
 ```
 
 ### 7.2. Dependências
@@ -1398,7 +1288,6 @@ Principais bibliotecas:
 - `flask`: Framework web
 - `openai`: Cliente OpenAI API
 - `pinecone-client`: Cliente Pinecone
-- `boto3`: AWS SDK
 - `langchain`: Processamento de documentos
 - `langchain-openai`: Integração OpenAI
 - `pandas`: Análise de dados
@@ -1424,19 +1313,13 @@ Principais bibliotecas:
 
 4. **Configurar variáveis de ambiente:**
    - Copiar `.env.example` para `.env`
-   - Preencher com credenciais reais
+   - Preencher com credenciais (OpenAI, Pinecone). O projeto não usa AWS nem Zatten.
 
-5. **Criar tabelas DynamoDB:**
-   ```python
-   python setup_database.py
-   ```
-   Ou usar `conversation_manager.create_tables()` via código
+5. **Executar aplicação:**
+   - A base de conhecimento vem dos arquivos que os clientes fazem upload na aplicação (demos) e do Pinecone.
+   - Threads e conversas ficam em memória.
 
-6. **Indexar documentos:**
-   - Colocar PDFs no S3 (contratos na raiz, FAQs em `faqs/`)
-   - Executar aplicação (indexação automática no startup)
-
-7. **Deploy no Render:**
+6. **Deploy no Render:**
    - Conectar repositório Git
    - Configurar variáveis de ambiente
    - Deploy automático
@@ -1455,7 +1338,6 @@ Principais bibliotecas:
 | **NoSQL DB** | AWS DynamoDB |
 | **Web Framework** | Flask (Python) |
 | **Processamento** | asyncio, ThreadPoolExecutor |
-| **WhatsApp** | Zatten + Meta API |
 | **Deploy** | Render |
 | **Análise Sentimento** | VADER + TextBlob |
 | **Data Analysis** | pandas + openpyxl |
@@ -1469,9 +1351,8 @@ Principais bibliotecas:
 
 ### Escalabilidade
 
-- **Queue-based processing**: Suporta picos de tráfego
-- **Async processing**: Não bloqueia webhook handler
-- **Cache**: Evita reprocessamento de documentos
+- **Queue-based processing**: Suporta picos de tráfego (quando aplicável)
+- **Cache**: Evita reprocessamento quando aplicável
 - **On-demand DynamoDB**: Escala automaticamente
 - **Pinecone**: Otimizado para busca vetorial em escala
 
@@ -1489,4 +1370,4 @@ Este sistema representa uma **solução completa de IA conversacional** para sup
 ✅ **Dashboard de monitoramento**  
 ✅ **Arquitetura escalável** na nuvem  
 
-A arquitetura modular permite fácil extensão e manutenção, enquanto a integração com WhatsApp oferece uma experiência fluida para os usuários finais.
+A arquitetura modular permite fácil extensão e manutenção.

@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-import boto3
 
 load_dotenv()
 
@@ -14,31 +13,6 @@ ASSISTANT_ID = os.getenv('ASSISTANT_ID')
 
 LLM_MODEL = os.getenv('LLM_MODEL', "gpt-4o")
 EMBEDDING_MODEL = os.getenv('EMBEDDING_MODEL')
-
-# --- AWS DynamoDB ---
-AWS_REGION = os.getenv("AWS_REGION", "us-east-2")
-DYNAMODB_TABLE_NAME = os.getenv("DYNAMODB_TABLE_NAME", "AssistantUserThreads")
-AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
-
-dynamodb = boto3.resource(
-    "dynamodb",
-    region_name=AWS_REGION,
-    aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-    aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY")
-)
-
-table = dynamodb.Table(DYNAMODB_TABLE_NAME)
-
-# --- Zatten ---
-ZATTEN_API_KEY = os.getenv('ZATTEN_API_KEY')
-ZATTEN_PHONE_NUMBER = os.getenv('ZATTEN_PHONE_NUMBER')
-ZATTEN_ATTENDANT_ID = os.getenv('ZATTEN_ATTENDANT_ID')
-
-# --- AWS S3 ---
-S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME', 'gen-ai-contratos')
-S3_CONTRACTS_PREFIX = os.getenv('S3_CONTRACTS_PREFIX', 'contratos/')
-S3_FAQS_PREFIX = os.getenv('S3_FAQS_PREFIX', 'faqs/')
 
 # --- Pinecone ---
 PINECONE_API_KEY = os.getenv('PINECONE_API_KEY')
@@ -58,5 +32,10 @@ EMAIL_FROM = os.getenv('EMAIL_FROM', '')
 EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD', '')
 EMAIL_TO = os.getenv('EMAIL_TO', 'fred_domingues@outlook.com')
 
-# --- Cron Security ---
-CRON_SECRET_TOKEN = os.getenv('CRON_SECRET_TOKEN', '')
+# --- Z-API (WhatsApp) — SDR interno ---
+ZAPI_BASE_URL = os.getenv('ZAPI_BASE_URL', 'https://api.z-api.io')
+ZAPI_INSTANCE_ID = os.getenv('ZAPI_INSTANCE_ID', '')
+ZAPI_TOKEN_INSTANCE = os.getenv('ZAPI_TOKEN_INSTANCE', '')
+# Token de segurança da conta (Client-Token). Se a Z-API exigir, configure no painel e coloque aqui.
+# Ver: https://developer.z-api.io/en/security/client-token
+ZAPI_CLIENT_TOKEN = os.getenv('ZAPI_CLIENT_TOKEN', '')
