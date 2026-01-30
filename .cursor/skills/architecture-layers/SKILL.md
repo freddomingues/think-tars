@@ -1,6 +1,6 @@
 ---
 name: architecture-layers
-description: Camadas e fronteiras do generative-ai — entrypoints, backend, frontend, ai, ingest, data, externos. Use ao decidir ONDE colocar um novo módulo, rota ou feature. Triggers: "camadas", "fronteiras", "onde colocar", "responsabilidade", "backend vs frontend", "ai vs ingest".
+description: Camadas e fronteiras do think-tars — entrypoints, backend, frontend, ai, ingest, data, externos. Use ao decidir ONDE colocar um novo módulo, rota ou feature. Triggers: "camadas", "fronteiras", "onde colocar", "responsabilidade", "backend vs frontend", "ai vs ingest".
 ---
 
 # Skill: Camadas e fronteiras

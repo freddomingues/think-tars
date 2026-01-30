@@ -1,6 +1,6 @@
 ---
 name: backend-api-demos
-description: Endpoints da API de demos do generative-ai — GET assistants, POST conversations, POST messages, POST upload-pdf, DELETE conversation. Use ao consultar ou alterar contratos da API de demos. Triggers: "API demos", "endpoint", "rota demos", "upload-pdf", "conversations", "messages".
+description: Endpoints da API de demos do think-tars — GET assistants, POST conversations, POST messages, POST upload-pdf, DELETE conversation. Use ao consultar ou alterar contratos da API de demos. Triggers: "API demos", "endpoint", "rota demos", "upload-pdf", "conversations", "messages".
 ---
 
 # Skill: API de demos (endpoints)

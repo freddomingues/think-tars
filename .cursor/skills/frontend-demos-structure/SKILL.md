@@ -1,6 +1,6 @@
 ---
 name: frontend-demos-structure
-description: Estrutura do frontend de demos do generative-ai — pastas, App.jsx, index.css, variáveis CSS. Use ao localizar ou alterar estrutura de arquivos do frontend. Triggers: "estrutura frontend", "App.jsx", "pastas frontend", "index.css".
+description: Estrutura do frontend de demos do think-tars — pastas, App.jsx, index.css, variáveis CSS. Use ao localizar ou alterar estrutura de arquivos do frontend. Triggers: "estrutura frontend", "App.jsx", "pastas frontend", "index.css".
 ---
 
 # Skill: Estrutura do frontend (site + Playground)

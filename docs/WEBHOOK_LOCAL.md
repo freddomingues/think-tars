@@ -56,7 +56,7 @@ Se esses valores estiverem vazios ou incorretos, o SDR até gera a resposta, mas
 ### 1. Terminal 1 — Subir o backend
 
 ```bash
-cd /caminho/do/generative-ai
+cd /caminho/do/think-tars
 source venv/bin/activate   # ou: . venv/bin/activate
 python app/main.py
 ```
@@ -68,7 +68,7 @@ Deixe esse terminal aberto. O Flask sobe em **http://127.0.0.1:5004**.
 Abra **outro** terminal no mesmo projeto:
 
 ```bash
-cd /caminho/do/generative-ai
+cd /caminho/do/think-tars
 ./scripts/run_webhook_local.sh
 ```
 

@@ -1,6 +1,6 @@
 # Instruções para Agentes de IA
 
-Repositório **generative-ai**: site Think TARS (nova versão), Playground de assistentes de IA (OpenAI Assistant API), SDR no WhatsApp (Z-API), trading, ingestão (Pinecone, PDFs). Toda a lógica de agentes está na pasta **`ai/`**. Contato comercial: **+55 41 8749-7364**.
+Repositório **think-tars**: site Think TARS (nova versão), Playground de assistentes de IA (OpenAI Assistant API), SDR no WhatsApp (Z-API), trading, ingestão (Pinecone, PDFs). Toda a lógica de agentes está na pasta **`ai/`**. Contato comercial: **+55 41 8749-7364**.
 
 ## Comando de Validação / Execução
 

@@ -1,11 +1,11 @@
 ---
 name: backend-new-route
-description: Como adicionar nova rota ou serviço no backend do generative-ai — blueprint demos vs novo blueprint, onde colocar lógica. Use ao criar nova funcionalidade HTTP no backend. Triggers: "nova rota", "novo endpoint", "adicionar rota", "novo serviço backend".
+description: Como adicionar nova rota ou serviço no backend do think-tars — blueprint demos vs novo blueprint, onde colocar lógica. Use ao criar nova funcionalidade HTTP no backend. Triggers: "nova rota", "novo endpoint", "adicionar rota", "novo serviço backend".
 ---
 
 # Skill: Adicionar nova rota ou serviço (backend)
 
-Passos para **adicionar uma nova rota ou serviço** no backend do generative-ai.
+Passos para **adicionar uma nova rota ou serviço** no backend do think-tars.
 
 ---
 

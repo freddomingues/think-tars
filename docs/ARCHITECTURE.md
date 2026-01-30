@@ -1,4 +1,4 @@
-# Arquitetura do Projeto generative-ai
+# Arquitetura do Projeto think-tars
 
 Este documento descreve a arquitetura do repositório para **escalar agentes de IA e automações** mantendo padrões claros e acoplamento baixo.
 

@@ -30,7 +30,7 @@ def start_main_app():
     subprocess.run([sys.executable, app_main], cwd=_root, env=env)
 
 def main():
-    print("🎯 Iniciando Sistema generative-ai")
+    print("🎯 Iniciando Sistema think-tars")
     print("=" * 50)
     
     required_vars = ['OPENAI_API_KEY', 'PINECONE_API_KEY']

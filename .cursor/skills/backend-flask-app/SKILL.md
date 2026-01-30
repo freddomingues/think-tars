@@ -1,6 +1,6 @@
 ---
 name: backend-flask-app
-description: App Flask do generative-ai — app/main.py, registro de blueprints, servir frontend em /demos, inicialização do assistente. Use ao alterar entrypoint HTTP ou registrar novos blueprints. Triggers: "app main", "Flask", "register blueprint", "servir demos", "entrypoint".
+description: App Flask do think-tars — app/main.py, registro de blueprints, servir frontend em /demos, inicialização do assistente. Use ao alterar entrypoint HTTP ou registrar novos blueprints. Triggers: "app main", "Flask", "register blueprint", "servir demos", "entrypoint".
 ---
 
 # Skill: App Flask (entrypoint)

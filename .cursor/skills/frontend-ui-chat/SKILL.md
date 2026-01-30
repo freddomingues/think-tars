@@ -1,6 +1,6 @@
 ---
 name: frontend-ui-chat
-description: UI do chat de demos do generative-ai — sidebar, seletor de assistente, upload PDF, mensagens, input, toast. Use ao alterar layout ou componentes visuais do chat. Triggers: "UI chat", "sidebar", "mensagens", "upload PDF", "componente chat".
+description: UI do chat de demos do think-tars — sidebar, seletor de assistente, upload PDF, mensagens, input, toast. Use ao alterar layout ou componentes visuais do chat. Triggers: "UI chat", "sidebar", "mensagens", "upload PDF", "componente chat".
 ---
 
 # Skill: UI do chat de demos

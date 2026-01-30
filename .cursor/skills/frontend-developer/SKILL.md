@@ -1,6 +1,6 @@
 ---
 name: frontend-developer
-description: Visão geral do frontend de demos do generative-ai — React, Vite, UI de chat. Use para contexto geral; para cenários específicos use as skills granulares. Triggers: "frontend", "React", "Vite", "demos", "UI", "chat", "frontend developer".
+description: Visão geral do frontend de demos do think-tars — React, Vite, UI de chat. Use para contexto geral; para cenários específicos use as skills granulares. Triggers: "frontend", "React", "Vite", "demos", "UI", "chat", "frontend developer".
 ---
 
 # Skill: Frontend Developer (visão geral)

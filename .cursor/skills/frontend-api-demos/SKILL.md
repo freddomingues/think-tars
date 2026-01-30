@@ -1,6 +1,6 @@
 ---
 name: frontend-api-demos
-description: Chamadas à API de demos no frontend do generative-ai — fetch assistants, conversations, messages, upload-pdf. Use ao alterar contratos ou adicionar novas chamadas à API. Triggers: "fetch demos", "API frontend", "upload-pdf", "conversations", "messages".
+description: Chamadas à API de demos no frontend do think-tars — fetch assistants, conversations, messages, upload-pdf. Use ao alterar contratos ou adicionar novas chamadas à API. Triggers: "fetch demos", "API frontend", "upload-pdf", "conversations", "messages".
 ---
 
 # Skill: Chamadas à API de demos (frontend)

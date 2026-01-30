@@ -1,11 +1,11 @@
 ---
 name: pull-request-creator
-description: Criar pull requests para o repositório generative-ai com descrição clara do que foi feito. Define processo, título, branch e template de explicação da PR. Use ao abrir PR, descrever mudanças ou preparar merge. Triggers: "criar PR", "pull request", "abrir PR", "descrição da PR", "explicar o que foi feito", "preparar PR", "merge request".
+description: Criar pull requests para o repositório think-tars com descrição clara do que foi feito. Define processo, título, branch e template de explicação da PR. Use ao abrir PR, descrever mudanças ou preparar merge. Triggers: "criar PR", "pull request", "abrir PR", "descrição da PR", "explicar o que foi feito", "preparar PR", "merge request".
 ---
 
 # Skill: Criar pull requests
 
-Guia para criar **pull requests** no repositório do projeto generative-ai, com foco numa **explicação objetiva do que foi feito** na PR.
+Guia para criar **pull requests** no repositório do projeto think-tars, com foco numa **explicação objetiva do que foi feito** na PR.
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 name: architecture-guide
-description: Índice do guia de arquitetura do generative-ai. Use para orientar onde encontrar detalhes: visão geral, registries, camadas, fluxo demos. Triggers: "arquitetura", "escalar agentes", "novo agente", "backend", "frontend", "demos", "registry", "tool dispatch", "config agents".
+description: Índice do guia de arquitetura do think-tars. Use para orientar onde encontrar detalhes: visão geral, registries, camadas, fluxo demos. Triggers: "arquitetura", "escalar agentes", "novo agente", "backend", "frontend", "demos", "registry", "tool dispatch", "config agents".
 ---
 
 # Skill: Guia de arquitetura (índice)
 
-Referência para **manter e escalar** a arquitetura do generative-ai. Esta skill funciona como **índice**: para detalhes, use as skills específicas listadas abaixo.
+Referência para **manter e escalar** a arquitetura do think-tars. Esta skill funciona como **índice**: para detalhes, use as skills específicas listadas abaixo.
 
 ---
 

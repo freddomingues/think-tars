@@ -1,6 +1,6 @@
 ---
 name: architecture-demos-flow
-description: Fluxo das demos no generative-ai — run_turn, send_message, allowed_tool_names, tool dispatch, criação de conversa. Use ao debugar ou alterar o fluxo mensagem → assistente → tools → resposta. Triggers: "fluxo demos", "run_turn", "send_message", "tool dispatch", "requires_action", "allowed_tool_names".
+description: Fluxo das demos no think-tars — run_turn, send_message, allowed_tool_names, tool dispatch, criação de conversa. Use ao debugar ou alterar o fluxo mensagem → assistente → tools → resposta. Triggers: "fluxo demos", "run_turn", "send_message", "tool dispatch", "requires_action", "allowed_tool_names".
 ---
 
 # Skill: Fluxo das demos

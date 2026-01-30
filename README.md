@@ -1,5 +1,6 @@
-# 🚀 Sistema de Assistente Jurídico Inteligente com IA
+# 🚀 Think TARS — Sistema de Assistentes de IA
 
+> **Repositório:** [think-tars](https://github.com/freddomingues/think-tars)  
 > **Nota:** Este projeto **não utiliza mais AWS** (S3, DynamoDB). A base de conhecimento vem dos **arquivos que os clientes fazem upload na aplicação** (demos) e do **Pinecone**. Threads e conversas são armazenados **em memória**.
 
 ## 📋 Sumário

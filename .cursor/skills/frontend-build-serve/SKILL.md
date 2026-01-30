@@ -1,6 +1,6 @@
 ---
 name: frontend-build-serve
-description: Build e servir o frontend de demos do generative-ai — npm run build, Vite, proxy /api, Flask serve /demos. Use ao configurar deploy ou ambiente de desenvolvimento. Triggers: "build frontend", "npm run build", "servir demos", "Vite", "proxy".
+description: Build e servir o frontend de demos do think-tars — npm run build, Vite, proxy /api, Flask serve /demos. Use ao configurar deploy ou ambiente de desenvolvimento. Triggers: "build frontend", "npm run build", "servir demos", "Vite", "proxy".
 ---
 
 # Skill: Build e servir o frontend de demos

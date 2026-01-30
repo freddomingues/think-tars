@@ -1,11 +1,11 @@
 ---
 name: backend-developer
-description: Visão geral do backend do generative-ai — Flask, API de demos, serviços. Use para contexto geral; para cenários específicos use as skills granulares. Triggers: "backend", "API", "endpoint", "rota", "Flask", "demos API", "services", "backend developer".
+description: Visão geral do backend do think-tars — Flask, API de demos, serviços. Use para contexto geral; para cenários específicos use as skills granulares. Triggers: "backend", "API", "endpoint", "rota", "Flask", "demos API", "services", "backend developer".
 ---
 
 # Skill: Backend Developer (visão geral)
 
-Guia de **visão geral** do backend do generative-ai. Para tarefas específicas, use as skills granulares listadas abaixo.
+Guia de **visão geral** do backend do think-tars. Para tarefas específicas, use as skills granulares listadas abaixo.
 
 ---
 

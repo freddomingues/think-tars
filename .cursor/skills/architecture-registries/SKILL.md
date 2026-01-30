@@ -1,6 +1,6 @@
 ---
 name: architecture-registries
-description: Registries e config do generative-ai — agents (ai/agents.py), automations (config/automations.py), settings. Use ao alterar registry de agentes, config ou automações. Triggers: "registry", "AGENTS_REGISTRY", "config agents", "config settings", "automations", "variáveis de ambiente".
+description: Registries e config do think-tars — agents (ai/agents.py), automations (config/automations.py), settings. Use ao alterar registry de agentes, config ou automações. Triggers: "registry", "AGENTS_REGISTRY", "config agents", "config settings", "automations", "variáveis de ambiente".
 ---
 
 # Skill: Registries e config

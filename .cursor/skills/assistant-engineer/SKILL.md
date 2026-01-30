@@ -1,6 +1,6 @@
 ---
 name: assistant-engineer
-description: Engenheiro de IA / Engenheiro de prompts para organizar, criar e ajustar assistentes no generative-ai. Estrutura ai/, isolamento por assistente (prompt + tools), registry, boas práticas de prompt e tools. Use ao criar/alterar assistentes, instruções, tools ou garantir que cada assistente use apenas seu escopo. Triggers: "engenheiro de IA", "engenheiro de prompt", "organizar assistentes", "ajustar assistente", "isolamento de tools", "prompt do agente", "tools do agente".
+description: Engenheiro de IA / Engenheiro de prompts para organizar, criar e ajustar assistentes no think-tars. Estrutura ai/, isolamento por assistente (prompt + tools), registry, boas práticas de prompt e tools. Use ao criar/alterar assistentes, instruções, tools ou garantir que cada assistente use apenas seu escopo. Triggers: "engenheiro de IA", "engenheiro de prompt", "organizar assistentes", "ajustar assistente", "isolamento de tools", "prompt do agente", "tools do agente".
 ---
 
 # Skill: Engenheiro de Assistentes de IA

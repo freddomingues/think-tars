@@ -1,6 +1,6 @@
 ---
 name: assistant-creator
-description: Desenvolver novos assistentes de IA (OpenAI Assistant API) no projeto generative-ai, seguindo os padrões em ai/. Use ao criar assistente, adicionar tools, alterar instruções. Triggers: "criar assistente", "novo assistente", "adicionar tool", "instruções do assistente", "Assistant API".
+description: Desenvolver novos assistentes de IA (OpenAI Assistant API) no projeto think-tars, seguindo os padrões em ai/. Use ao criar assistente, adicionar tools, alterar instruções. Triggers: "criar assistente", "novo assistente", "adicionar tool", "instruções do assistente", "Assistant API".
 ---
 
 # Skill: Criar novos assistentes de IA

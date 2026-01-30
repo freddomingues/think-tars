@@ -1,6 +1,6 @@
 ---
 name: backend-services-demos
-description: Serviços da API de demos do generative-ai — list_assistants, create_conversation, send_message, upload_pdf_and_create_vector_store, cleanup_conversation. Use ao alterar lógica de negócio das demos. Triggers: "services demos", "create_conversation", "send_message", "run_turn", "allowed_tool_names".
+description: Serviços da API de demos do think-tars — list_assistants, create_conversation, send_message, upload_pdf_and_create_vector_store, cleanup_conversation. Use ao alterar lógica de negócio das demos. Triggers: "services demos", "create_conversation", "send_message", "run_turn", "allowed_tool_names".
 ---
 
 # Skill: Serviços de demos

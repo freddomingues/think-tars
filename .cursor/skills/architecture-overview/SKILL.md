@@ -1,11 +1,11 @@
 ---
 name: architecture-overview
-description: Visão geral da arquitetura do generative-ai — princípios, mapa de camadas, tabela "onde mudar o quê", convenções. Use quando precisar saber ONDE fazer uma mudança ou entender o projeto como um todo. Triggers: "onde mudar", "onde fica", "estrutura do projeto", "arquitetura geral", "mapa do projeto".
+description: Visão geral da arquitetura do think-tars — princípios, mapa de camadas, tabela "onde mudar o quê", convenções. Use quando precisar saber ONDE fazer uma mudança ou entender o projeto como um todo. Triggers: "onde mudar", "onde fica", "estrutura do projeto", "arquitetura geral", "mapa do projeto".
 ---
 
 # Skill: Visão geral da arquitetura
 
-Referência rápida para **localizar** onde fazer mudanças no projeto generative-ai. Para detalhes por área, use as skills específicas (architecture-registries, architecture-layers, architecture-demos-flow, backend-*, frontend-*).
+Referência rápida para **localizar** onde fazer mudanças no projeto think-tars. Para detalhes por área, use as skills específicas (architecture-registries, architecture-layers, architecture-demos-flow, backend-*, frontend-*).
 
 ---
 
