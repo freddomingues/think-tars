@@ -163,7 +163,7 @@ docs/                                  # Documentação
 - **Manutenção do frontend:** `frontend-maintenance` — componentes React, estado, API calls, CSS, responsividade, debugging.
 
 #### Deploy e Infraestrutura
-- **Deploy no Render:** `render-deploy` — build commands, Procfile, variáveis de ambiente, troubleshooting, logs, domínio customizado.
+- **Deploy no Render:** `render-deploy` — build commands, Procfile, variáveis de ambiente, troubleshooting, logs, domínio customizado, **uso de MCP Render para verificações automáticas**.
 
 #### Outros
 - **Criar PR:** `pull-request-creator`
@@ -184,6 +184,35 @@ docs/                                  # Documentação
 1. NUNCA criar commits automaticamente — aguardar comando do usuário.
 2. Responder em **português** ao usuário quando for o caso.
 3. Ao duplicar comportamento, verificar se já existe em `ai/`, `backend/` ou `ingest/`.
+4. **Para problemas de deploy no Render:** SEMPRE usar MCP do Render (`mcp_render_list_logs`, `mcp_render_get_service`, etc.) para diagnosticar antes de sugerir soluções. Ver skill `render-deploy` seção "Uso do MCP do Render".
+
+### Uso do MCP do Render para Verificações Automáticas
+
+**Quando o usuário reportar problemas de deploy ou pedir verificação:**
+
+1. **SEMPRE começar verificando logs via MCP:**
+   - `mcp_render_list_services()` - Identificar service ID do "think-tars"
+   - `mcp_render_list_logs(resource=[service_id])` - Analisar logs recentes
+   - `mcp_render_get_service(serviceId=service_id)` - Verificar configuração
+
+2. **Workflow de diagnóstico:**
+   - Problema reportado → Usar MCP para verificar logs → Identificar causa → Sugerir solução baseada em evidências
+
+3. **Ferramentas MCP disponíveis:**
+   - `mcp_render_list_services` - Listar serviços
+   - `mcp_render_get_service` - Detalhes do serviço
+   - `mcp_render_list_logs` - Logs (build, app, request)
+   - `mcp_render_list_deploys` - Histórico de deploys
+   - `mcp_render_get_deploy` - Detalhes de um deploy
+   - `mcp_render_get_metrics` - Métricas de performance
+
+4. **Exemplos de uso:**
+   - Verificar se build foi bem-sucedido: filtrar logs por "Build successful"
+   - Verificar se gunicorn está rodando: filtrar logs por "Starting gunicorn"
+   - Verificar se frontend foi buildado: filtrar logs por "built in"
+   - Verificar configuração: `get_service` → verificar `buildCommand` e `startCommand`
+
+**Ver skill `render-deploy` seção "Uso do MCP do Render para Verificações Automáticas" para exemplos detalhados.**
 
 ---
 
@@ -198,6 +227,7 @@ docs/                                  # Documentação
 
 - **[.cursor/skills/architecture-guide/references/camadas-e-registries.md](.cursor/skills/architecture-guide/references/camadas-e-registries.md)** — Camadas, registry de agentes (`ai/agents.py`), tool dispatch (`ai/tools/dispatch.py`).
 - **[.cursor/skills/assistant-engineer/references/isolamento-e-escopo.md](.cursor/skills/assistant-engineer/references/isolamento-e-escopo.md)** — Isolamento por assistente (allowed_tool_names, get_agent_tool_names).
+- **[.cursor/skills/render-deploy/references/mcp-workflow.md](.cursor/skills/render-deploy/references/mcp-workflow.md)** — Workflow completo de uso do MCP do Render para verificações automáticas de logs, status e métricas.
 
 ### Skills (conteúdo em .cursor/skills/)
 
@@ -223,7 +253,7 @@ docs/                                  # Documentação
 - **frontend-maintenance** — Manutenção do frontend: componentes React, estado, API calls, CSS, responsividade, debugging.
 
 #### Deploy e Infraestrutura
-- **render-deploy** — Deploy e manutenção no Render: build commands, Procfile, variáveis de ambiente, troubleshooting, logs, domínio customizado.
+- **render-deploy** — Deploy e manutenção no Render: build commands, Procfile, variáveis de ambiente, troubleshooting, logs, domínio customizado, **uso de MCP Render para verificações automáticas de logs, status e métricas**.
 
 #### Outros
 - **pull-request-creator** — Template e fluxo de PR.

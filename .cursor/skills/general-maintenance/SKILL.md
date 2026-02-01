@@ -147,10 +147,14 @@ cd .. && python app/main.py
 
 ### Deploy falha
 
-1. Verificar Build Command no Render
-2. Verificar logs de build
-3. Verificar Procfile
-4. Verificar variáveis de ambiente
+1. **Usar MCP do Render para diagnosticar:**
+   - `mcp_render_list_services()` - Identificar service ID
+   - `mcp_render_list_logs(resource=[service_id])` - Verificar logs de build e runtime
+   - `mcp_render_get_service(serviceId=service_id)` - Verificar configuração
+2. Verificar Build Command no Render (via MCP ou painel)
+3. Verificar logs de build (via MCP: filtrar por `type=['build']`)
+4. Verificar Procfile
+5. Verificar variáveis de ambiente
 
 ---
 
