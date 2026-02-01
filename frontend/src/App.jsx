@@ -344,22 +344,19 @@ export default function App() {
       setError('Por favor, preencha todos os campos.')
       return
     }
-    const message = `🎯 NOVO LEAD - Cliente com Ideia Pronta\n\n` +
-      `Nome: ${contactName}\n` +
-      `Descrição da Ideia:\n${contactIdea}`
+    // Mensagem natural e estratégica para o SDR Agent processar
+    const message = `Olá! Sou ${contactName} e gostaria de conversar sobre uma ideia de projeto com IA. ${contactIdea} Podem me ajudar a entender como podemos implementar isso?`
     sendToSDR(message)
   }
 
   const handleApproveScope = () => {
     if (!projectScope) return
-    const message = `🎯 NOVO LEAD - Escopo Aprovado\n\n` +
-      `Tipo de Negócio: ${projectScope.businessType}\n` +
-      `Desafio Principal: ${projectScope.mainChallenge}\n` +
-      `Objetivo de Automação: ${projectScope.automationGoal}\n` +
-      `Tempo a Economizar: ${projectScope.timeSaved}\n` +
-      `Investimento: ${projectScope.budgetRange}\n\n` +
-      `Solução Proposta: ${projectScope.solutionType}\n\n` +
-      `Descrição:\n${projectScope.description}`
+    // Mensagem natural e estratégica para o SDR Agent
+    const message = `Olá! Gostaria de conversar sobre um projeto de automação com IA. ` +
+      `Trabalho com ${projectScope.businessType} e nosso principal desafio é ${projectScope.mainChallenge.toLowerCase()}. ` +
+      `Queremos automatizar ${projectScope.automationGoal.toLowerCase()} para economizar ${projectScope.timeSaved.toLowerCase()}. ` +
+      `Estamos pensando em uma solução de ${projectScope.solutionType.toLowerCase()} e nosso orçamento está na faixa de ${projectScope.budgetRange.toLowerCase()}. ` +
+      `Podem me ajudar?`
     sendToSDR(message)
   }
 
@@ -375,12 +372,18 @@ export default function App() {
   }
 
   const handleTalkToExpert = () => {
-    const message = `🎯 NOVO LEAD - Cliente quer falar com especialista\n\n` +
-      `O cliente completou o quiz mas preferiu falar diretamente com um especialista.\n\n` +
-      `Respostas do Quiz:\n` +
-      `Tipo de Negócio: ${projectScope?.businessType || 'Não informado'}\n` +
-      `Desafio Principal: ${projectScope?.mainChallenge || 'Não informado'}\n` +
-      `Objetivo de Automação: ${projectScope?.automationGoal || 'Não informado'}`
+    // Mensagem natural quando cliente quer falar diretamente
+    let message = `Olá! Gostaria de conversar sobre automação com IA para meu negócio.`
+    
+    // Adiciona contexto do quiz se disponível, de forma natural
+    if (projectScope) {
+      message += ` Trabalho com ${projectScope.businessType.toLowerCase()} e nosso principal desafio é ${projectScope.mainChallenge.toLowerCase()}. ` +
+        `Queremos automatizar ${projectScope.automationGoal.toLowerCase()}. ` +
+        `Podem me ajudar a estruturar melhor essa ideia?`
+    } else {
+      message += ` Preciso de ajuda para estruturar minha ideia e entender como a IA pode ajudar meu negócio.`
+    }
+    
     sendToSDR(message)
   }
 
