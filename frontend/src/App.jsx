@@ -293,30 +293,23 @@ export default function App() {
     }
   }
 
-  // Função para enviar mensagem ao SDR
-  const sendToSDR = async (message) => {
+  // Função para abrir WhatsApp com mensagem pré-preenchida
+  const sendToSDR = (message) => {
     try {
-      setLoading(true)
-      setError(null)
-      const response = await fetch(`${API}/contact/send-to-sdr`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message })
-      })
+      // Número do WhatsApp da TARS (formato internacional sem +)
+      const whatsappNumber = '554187497364'
       
-      // Verifica se a resposta é JSON antes de fazer parse
-      const contentType = response.headers.get('content-type')
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text()
-        console.error('Resposta não é JSON:', text.substring(0, 200))
-        throw new Error('Erro no servidor. Por favor, tente novamente mais tarde.')
-      }
+      // Codifica a mensagem para URL
+      const encodedMessage = encodeURIComponent(message)
       
-      const data = await response.json()
-      if (!response.ok) {
-        throw new Error(data.error || 'Erro ao enviar mensagem')
-      }
-      setError('Mensagem enviada com sucesso! Nossa equipe entrará em contato em breve.')
+      // Cria o link wa.me
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`
+      
+      // Abre o WhatsApp em nova aba/janela
+      window.open(whatsappUrl, '_blank')
+      
+      // Mostra mensagem de sucesso
+      setError('Redirecionando para o WhatsApp...')
       setTimeout(() => {
         setContactMode(null)
         setContactName('')
@@ -326,12 +319,10 @@ export default function App() {
         setProjectScope(null)
         setScopeApproved(null)
         setError(null)
-      }, 3000)
+      }, 2000)
     } catch (e) {
-      console.error('Erro ao enviar para SDR:', e)
-      setError(e.message || 'Erro ao enviar mensagem. Por favor, tente novamente.')
-    } finally {
-      setLoading(false)
+      console.error('Erro ao abrir WhatsApp:', e)
+      setError('Erro ao abrir WhatsApp. Por favor, tente novamente.')
     }
   }
 
@@ -348,7 +339,7 @@ export default function App() {
     }
   }
 
-  const handleSubmitIdea = async () => {
+  const handleSubmitIdea = () => {
     if (!contactName.trim() || !contactIdea.trim()) {
       setError('Por favor, preencha todos os campos.')
       return
@@ -356,10 +347,10 @@ export default function App() {
     const message = `🎯 NOVO LEAD - Cliente com Ideia Pronta\n\n` +
       `Nome: ${contactName}\n` +
       `Descrição da Ideia:\n${contactIdea}`
-    await sendToSDR(message)
+    sendToSDR(message)
   }
 
-  const handleApproveScope = async () => {
+  const handleApproveScope = () => {
     if (!projectScope) return
     const message = `🎯 NOVO LEAD - Escopo Aprovado\n\n` +
       `Tipo de Negócio: ${projectScope.businessType}\n` +
@@ -369,7 +360,7 @@ export default function App() {
       `Investimento: ${projectScope.budgetRange}\n\n` +
       `Solução Proposta: ${projectScope.solutionType}\n\n` +
       `Descrição:\n${projectScope.description}`
-    await sendToSDR(message)
+    sendToSDR(message)
   }
 
   const handleRejectScope = () => {
@@ -383,14 +374,14 @@ export default function App() {
     setScopeApproved(null)
   }
 
-  const handleTalkToExpert = async () => {
+  const handleTalkToExpert = () => {
     const message = `🎯 NOVO LEAD - Cliente quer falar com especialista\n\n` +
       `O cliente completou o quiz mas preferiu falar diretamente com um especialista.\n\n` +
       `Respostas do Quiz:\n` +
       `Tipo de Negócio: ${projectScope?.businessType || 'Não informado'}\n` +
       `Desafio Principal: ${projectScope?.mainChallenge || 'Não informado'}\n` +
       `Objetivo de Automação: ${projectScope?.automationGoal || 'Não informado'}`
-    await sendToSDR(message)
+    sendToSDR(message)
   }
 
   // Carrossel de soluções
@@ -1838,20 +1829,20 @@ export default function App() {
               </button>
               <button
                 onClick={handleSubmitIdea}
-                disabled={loading || !contactName.trim() || !contactIdea.trim()}
+                disabled={!contactName.trim() || !contactIdea.trim()}
                 style={{
                   padding: '0.75rem 1.5rem',
                   background: 'var(--accent)',
                   border: 'none',
                   borderRadius: 8,
                   color: 'var(--bg)',
-                  cursor: loading || !contactName.trim() || !contactIdea.trim() ? 'not-allowed' : 'pointer',
+                  cursor: !contactName.trim() || !contactIdea.trim() ? 'not-allowed' : 'pointer',
                   fontSize: '1rem',
                   fontWeight: 600,
-                  opacity: loading || !contactName.trim() || !contactIdea.trim() ? 0.6 : 1
+                  opacity: !contactName.trim() || !contactIdea.trim() ? 0.6 : 1
                 }}
               >
-                {loading ? 'Enviando...' : 'Entrar em Contato'}
+                Entrar em Contato
               </button>
             </div>
           </div>
@@ -1970,20 +1961,18 @@ export default function App() {
                   </button>
                   <button
                     onClick={handleApproveScope}
-                    disabled={loading}
                     style={{
                       padding: '0.75rem 1.5rem',
                       background: 'var(--accent)',
                       border: 'none',
                       borderRadius: 8,
                       color: 'var(--bg)',
-                      cursor: loading ? 'not-allowed' : 'pointer',
+                      cursor: 'pointer',
                       fontSize: '1.2rem',
-                      fontWeight: 600,
-                      opacity: loading ? 0.6 : 1
+                      fontWeight: 600
                     }}
                   >
-                    {loading ? 'Enviando...' : 'Falar com Especialista'}
+                    Falar com Especialista
                   </button>
                 </div>
               </div>
@@ -2008,7 +1997,6 @@ export default function App() {
                   </button>
                   <button
                     onClick={handleTalkToExpert}
-                    disabled={loading}
                     style={{
                       padding: '1rem 1.5rem',
                       background: 'var(--accent)',
@@ -2016,12 +2004,11 @@ export default function App() {
                       borderRadius: 8,
                       color: 'var(--bg)',
                       fontSize: '1.2rem',
-                      cursor: loading ? 'not-allowed' : 'pointer',
-                      fontWeight: 600,
-                      opacity: loading ? 0.6 : 1
+                      cursor: 'pointer',
+                      fontWeight: 600
                     }}
                   >
-                    {loading ? 'Enviando...' : 'Falar Diretamente com Especialista'}
+                    Falar Diretamente com Especialista
                   </button>
                 </div>
               </div>
