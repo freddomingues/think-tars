@@ -277,11 +277,54 @@ No painel do Render → **Logs**
 4. Siga as instruções de DNS do Render
 5. Configure DNS na Hostinger conforme instruções
 
+**Guia completo:** Ver `docs/CONFIGURAR_DOMINIO_HOSTINGER.md` para passo a passo detalhado.
+
+### Configuração DNS na Hostinger
+
+**Para domínio raiz (`thinktars.tech`):**
+- **Opção A (Recomendado):** `ALIAS` `@` → `think-tars.onrender.com`
+- **Opção B:** `A` `@` → `216.24.57.1`
+
+**Para subdomínio `www`:**
+- `CNAME` `www` → `think-tars.onrender.com`
+
+**Importante:**
+- Remover registros antigos que apontam para `connect.hostinger.com`
+- Manter registros CAA (certificados SSL)
+- Aguardar propagação DNS (1-48 horas)
+
 ### HTTPS
 
 - Render emite certificado SSL automaticamente
-- Pode levar alguns minutos após configurar DNS
+- Pode levar alguns minutos após configurar DNS e verificação
 - Se não funcionar, verificar DNS e aguardar propagação
+- Verificar status no Render Dashboard → Custom Domains
+
+### Problema: "Certificate Error" com "Domain Verified"
+
+**Sintomas:** Domínio verificado mas certificado SSL não é emitido.
+
+**Causas:**
+1. Registros CAA bloqueando Let's Encrypt
+2. DNS ainda não propagou completamente
+3. Registros CAA conflitantes
+
+**Soluções:**
+1. **Verificar registros CAA na Hostinger:**
+   - Devem incluir `letsencrypt.org`
+   - Adicionar: `CAA` `@` → `0 issue "letsencrypt.org"`
+
+2. **Aguardar 1-2 horas** após verificação do domínio
+
+3. **Verificar DNS:**
+   ```bash
+   dig CAA thinktars.tech
+   dig thinktars.tech
+   ```
+
+4. **Se persistir:** Contatar suporte Render via link na mensagem de erro
+
+**Guia completo:** Ver `docs/CONFIGURAR_DOMINIO_HOSTINGER.md` seção "Troubleshooting: Erro de Certificado SSL"
 
 ---
 
