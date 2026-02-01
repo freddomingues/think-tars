@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // Em dev: base '/' para abrir em http://localhost:5173/ e ver o app
-  // Em build: base '/demos/' para Flask servir em /demos
-  base: process.env.NODE_ENV === 'production' ? '/demos/' : '/',
+  // Em build: base '/' para servir na raiz (Render)
+  base: '/',
   server: {
     port: 5173,
     proxy: {

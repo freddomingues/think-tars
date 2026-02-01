@@ -46,6 +46,15 @@ logger.info("✅ Base de conhecimento: arquivos enviados pelos clientes na aplic
 
 @app.route('/')
 def home():
+    """Serve o frontend na raiz quando frontend/dist existe, senão retorna mensagem."""
+    _frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+    if os.path.isdir(_frontend_dist) and os.path.isfile(os.path.join(_frontend_dist, "index.html")):
+        from flask import send_from_directory
+        response = send_from_directory(_frontend_dist, "index.html")
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
     return (
         'Think TARS — Soluções em IA ativo! '
         '<a href="/demos/">Playground e site</a>'
@@ -61,36 +70,51 @@ from backend.zapi_webhook import bp as zapi_bp
 app.register_blueprint(zapi_bp)
 logger.info("✅ Webhook Z-API registrado em /api/zapi/webhook")
 
-# Serve frontend de demos em /demos (quando frontend/dist existir)
+# Serve frontend estático (quando frontend/dist existir)
 _frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
 if os.path.isdir(_frontend_dist):
     from flask import send_from_directory
+    
+    # Serve assets estáticos (JS, CSS, imagens, etc.) na raiz
+    @app.route("/assets/<path:path>")
+    def frontend_assets(path):
+        """Serve assets do frontend (JS, CSS, etc.)"""
+        assets_dir = os.path.join(_frontend_dist, "assets")
+        if os.path.isfile(os.path.join(assets_dir, path)):
+            response = send_from_directory(assets_dir, path)
+            response.headers['Cache-Control'] = 'public, max-age=31536000'
+            return response
+        return jsonify({"error": "Asset não encontrado"}), 404
+    
+    # Mantém /demos para compatibilidade
     @app.route("/demos")
     @app.route("/demos/")
     def demos_index():
         response = send_from_directory(_frontend_dist, "index.html")
-        # Força atualização do cache do navegador
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
         return response
+    
     @app.route("/demos/<path:path>")
     def demos_static(path):
+        """Serve arquivos estáticos do frontend em /demos/<path>"""
         p = os.path.join(_frontend_dist, path)
         if os.path.isfile(p):
             response = send_from_directory(_frontend_dist, path)
-            # Para assets, permite cache mas com validação
             if path.startswith('assets/'):
                 response.headers['Cache-Control'] = 'public, max-age=31536000'
             else:
                 response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
             return response
+        # Fallback para SPA: retorna index.html para rotas do React Router
         response = send_from_directory(_frontend_dist, "index.html")
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return response
-    logger.info("✅ Frontend de demos em /demos")
+    
+    logger.info("✅ Frontend estático configurado (raiz e /demos)")
 else:
-    logger.warning("⚠️ frontend/dist não encontrado. Rode 'cd frontend && npm run build' para servir /demos")
+    logger.warning("⚠️ frontend/dist não encontrado. Rode 'cd frontend && npm run build' para servir o frontend")
 
 @app.route('/api/tools/search_contracts', methods=['POST'])
 def search_contracts():
@@ -128,9 +152,22 @@ def search_faqs():
         log_error('app.main', f"Erro na busca de FAQs: {e}")
         return jsonify({"error": "Internal server error"}), 500
 
-# Handler de erro global para garantir que sempre retorne JSON em caso de erro
+# Handler de erro global
 @app.errorhandler(404)
 def not_found(error):
+    """Para rotas de API, retorna JSON. Para outras rotas, tenta servir o frontend (SPA)."""
+    # Se for uma rota de API, retorna JSON
+    if request.path.startswith('/api/'):
+        return jsonify({"error": "Endpoint não encontrado"}), 404
+    
+    # Para outras rotas, tenta servir o frontend (SPA fallback)
+    _frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+    if os.path.isdir(_frontend_dist) and os.path.isfile(os.path.join(_frontend_dist, "index.html")):
+        from flask import send_from_directory
+        response = send_from_directory(_frontend_dist, "index.html")
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return response
+    
     return jsonify({"error": "Endpoint não encontrado"}), 404
 
 @app.errorhandler(500)
