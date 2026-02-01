@@ -44,13 +44,21 @@ initialize_application()
 
 logger.info("✅ Base de conhecimento: arquivos enviados pelos clientes na aplicação + Pinecone")
 
+def get_frontend_dist_path():
+    """Retorna o caminho para frontend/dist."""
+    return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+
+def frontend_dist_exists():
+    """Verifica se frontend/dist existe e tem index.html."""
+    dist_path = get_frontend_dist_path()
+    return os.path.isdir(dist_path) and os.path.isfile(os.path.join(dist_path, "index.html"))
+
 @app.route('/')
 def home():
     """Serve o frontend na raiz quando frontend/dist existe, senão retorna mensagem."""
-    _frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
-    if os.path.isdir(_frontend_dist) and os.path.isfile(os.path.join(_frontend_dist, "index.html")):
+    if frontend_dist_exists():
         from flask import send_from_directory
-        response = send_from_directory(_frontend_dist, "index.html")
+        response = send_from_directory(get_frontend_dist_path(), "index.html")
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         response.headers['Pragma'] = 'no-cache'
         response.headers['Expires'] = '0'
@@ -70,51 +78,59 @@ from backend.zapi_webhook import bp as zapi_bp
 app.register_blueprint(zapi_bp)
 logger.info("✅ Webhook Z-API registrado em /api/zapi/webhook")
 
-# Serve frontend estático (quando frontend/dist existir)
-_frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
-if os.path.isdir(_frontend_dist):
-    from flask import send_from_directory
-    
-    # Serve assets estáticos (JS, CSS, imagens, etc.) na raiz
-    @app.route("/assets/<path:path>")
-    def frontend_assets(path):
-        """Serve assets do frontend (JS, CSS, etc.)"""
-        assets_dir = os.path.join(_frontend_dist, "assets")
-        if os.path.isfile(os.path.join(assets_dir, path)):
-            response = send_from_directory(assets_dir, path)
+# Serve frontend estático (rotas registradas de forma lazy)
+from flask import send_from_directory
+
+@app.route("/assets/<path:path>")
+def frontend_assets(path):
+    """Serve assets do frontend (JS, CSS, etc.)"""
+    if not frontend_dist_exists():
+        return jsonify({"error": "Frontend não buildado"}), 404
+    _frontend_dist = get_frontend_dist_path()
+    assets_dir = os.path.join(_frontend_dist, "assets")
+    if os.path.isfile(os.path.join(assets_dir, path)):
+        response = send_from_directory(assets_dir, path)
+        response.headers['Cache-Control'] = 'public, max-age=31536000'
+        return response
+    return jsonify({"error": "Asset não encontrado"}), 404
+
+# Mantém /demos para compatibilidade
+@app.route("/demos")
+@app.route("/demos/")
+def demos_index():
+    if not frontend_dist_exists():
+        return jsonify({"error": "Frontend não buildado"}), 404
+    _frontend_dist = get_frontend_dist_path()
+    response = send_from_directory(_frontend_dist, "index.html")
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
+
+@app.route("/demos/<path:path>")
+def demos_static(path):
+    """Serve arquivos estáticos do frontend em /demos/<path>"""
+    if not frontend_dist_exists():
+        return jsonify({"error": "Frontend não buildado"}), 404
+    _frontend_dist = get_frontend_dist_path()
+    p = os.path.join(_frontend_dist, path)
+    if os.path.isfile(p):
+        response = send_from_directory(_frontend_dist, path)
+        if path.startswith('assets/'):
             response.headers['Cache-Control'] = 'public, max-age=31536000'
-            return response
-        return jsonify({"error": "Asset não encontrado"}), 404
-    
-    # Mantém /demos para compatibilidade
-    @app.route("/demos")
-    @app.route("/demos/")
-    def demos_index():
-        response = send_from_directory(_frontend_dist, "index.html")
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        response.headers['Pragma'] = 'no-cache'
-        response.headers['Expires'] = '0'
+        else:
+            response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
         return response
-    
-    @app.route("/demos/<path:path>")
-    def demos_static(path):
-        """Serve arquivos estáticos do frontend em /demos/<path>"""
-        p = os.path.join(_frontend_dist, path)
-        if os.path.isfile(p):
-            response = send_from_directory(_frontend_dist, path)
-            if path.startswith('assets/'):
-                response.headers['Cache-Control'] = 'public, max-age=31536000'
-            else:
-                response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-            return response
-        # Fallback para SPA: retorna index.html para rotas do React Router
-        response = send_from_directory(_frontend_dist, "index.html")
-        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-        return response
-    
+    # Fallback para SPA: retorna index.html para rotas do React Router
+    response = send_from_directory(_frontend_dist, "index.html")
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    return response
+
+# Log de status do frontend (verificação lazy)
+if frontend_dist_exists():
     logger.info("✅ Frontend estático configurado (raiz e /demos)")
 else:
-    logger.warning("⚠️ frontend/dist não encontrado. Rode 'cd frontend && npm run build' para servir o frontend")
+    logger.warning("⚠️ frontend/dist não encontrado. O frontend será buildado durante o deploy.")
 
 @app.route('/api/tools/search_contracts', methods=['POST'])
 def search_contracts():
@@ -161,8 +177,8 @@ def not_found(error):
         return jsonify({"error": "Endpoint não encontrado"}), 404
     
     # Para outras rotas, tenta servir o frontend (SPA fallback)
-    _frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
-    if os.path.isdir(_frontend_dist) and os.path.isfile(os.path.join(_frontend_dist, "index.html")):
+    if frontend_dist_exists():
+        _frontend_dist = get_frontend_dist_path()
         from flask import send_from_directory
         response = send_from_directory(_frontend_dist, "index.html")
         response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
