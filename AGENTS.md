@@ -105,16 +105,21 @@ docs/                                  # Documentação
 ├── architecture-demos-flow/            # Fluxo run_turn, send_message, tool dispatch
 ├── assistant-creator/                 # Criar novo assistente, prompts, tools (ai/)
 ├── assistant-engineer/                # Isolamento, escopo, boas práticas prompts/tools
+├── ai-agents-maintenance/             # Manutenção completa de agentes (criar/editar, prompts, tools, debug)
 ├── backend-developer/                 # Visão geral backend → skills granulares
 ├── backend-api-demos/                 # Endpoints API de demos
 ├── backend-services-demos/            # Serviços (create_conversation, send_message, upload PDF)
 ├── backend-flask-app/                 # App Flask, registro blueprints, servir /demos
 ├── backend-new-route/                 # Como adicionar nova rota ou blueprint
+├── backend-maintenance/               # Manutenção do backend (rotas, serviços, error handling, logging)
 ├── frontend-developer/                # Visão geral frontend → skills granulares
 ├── frontend-demos-structure/          # Estrutura pastas, App.jsx, index.css
 ├── frontend-api-demos/                # Chamadas fetch à API de demos
 ├── frontend-ui-chat/                  # UI do chat (sidebar, mensagens, upload PDF)
 ├── frontend-build-serve/              # Build (npm run build) e servir (Flask /demos)
+├── frontend-maintenance/              # Manutenção do frontend (React, CSS, responsividade, debug)
+├── render-deploy/                     # Deploy e manutenção no Render (build, Procfile, troubleshooting)
+├── general-maintenance/               # Manutenção geral (estrutura, debugging, testes, troubleshooting)
 ├── pull-request-creator/              # Template de PR
 ├── sdr-zapi/                          # SDR WhatsApp (Z-API, webhook, agente interno)
 └── testing-local-backend/             # Testes locais do backend (webhook SDR, Playground, curl)
@@ -140,11 +145,27 @@ docs/                                  # Documentação
 
 ### Skills recomendadas (Cursor)
 
+#### Manutenção de Agentes de IA
 - **Organizar/criar/ajustar assistentes (engenheiro de IA/prompt):** `assistant-engineer` — isolamento, prompts, tools, registry.
-- **Arquitetura / onde mudar o quê:** `architecture-guide` (índice) → `architecture-overview`, `architecture-registries`, `architecture-layers`, `architecture-demos-flow`.
 - **Criar novo assistente ou tool:** `assistant-creator`
+- **Manutenção de agentes:** `ai-agents-maintenance` — criar/editar agentes, ajustar prompts, adicionar tools, debugging, isolamento, code_interpreter.
+
+#### Arquitetura e Estrutura
+- **Arquitetura / onde mudar o quê:** `architecture-guide` (índice) → `architecture-overview`, `architecture-registries`, `architecture-layers`, `architecture-demos-flow`.
+- **Manutenção geral:** `general-maintenance` — estrutura geral, debugging, testes, troubleshooting.
+
+#### Backend
 - **Backend / API de demos:** `backend-developer` (índice) → `backend-api-demos`, `backend-services-demos`, `backend-flask-app`, `backend-new-route`.
+- **Manutenção do backend:** `backend-maintenance` — rotas, serviços, blueprints, error handling, logging, servir frontend.
+
+#### Frontend
 - **Frontend demos:** `frontend-developer` (índice) → `frontend-demos-structure`, `frontend-api-demos`, `frontend-ui-chat`, `frontend-build-serve`.
+- **Manutenção do frontend:** `frontend-maintenance` — componentes React, estado, API calls, CSS, responsividade, debugging.
+
+#### Deploy e Infraestrutura
+- **Deploy no Render:** `render-deploy` — build commands, Procfile, variáveis de ambiente, troubleshooting, logs, domínio customizado.
+
+#### Outros
 - **Criar PR:** `pull-request-creator`
 - **SDR WhatsApp (Z-API, webhook, agente interno):** `sdr-zapi`
 - **Testes locais do backend (após novas implementações):** `testing-local-backend`
@@ -180,15 +201,31 @@ docs/                                  # Documentação
 
 ### Skills (conteúdo em .cursor/skills/)
 
+#### Manutenção de Agentes de IA
 - **assistant-engineer** — Isolamento, escopo, boas práticas de prompts e tools (ai/).
 - **assistant-creator** — Criar novo assistente: registry em `ai/agents.py`, instruções em `ai/prompts/`, tools em `ai/tools/`.
+- **ai-agents-maintenance** — Manutenção completa de agentes: criar/editar agentes, ajustar prompts, adicionar tools, debugging, isolamento, code_interpreter.
+
+#### Arquitetura e Estrutura
 - **architecture-guide** — Índice: overview, registries, layers, demos-flow.
 - **architecture-overview** — Onde mudar o quê, mapa de camadas.
 - **architecture-registries** — Registry de agentes, config, automations.
 - **architecture-layers** — Camadas e fronteiras (entrypoints, backend, frontend, ai, ingest).
 - **architecture-demos-flow** — Fluxo run_turn, send_message, tool dispatch, allowed_tool_names.
+- **general-maintenance** — Manutenção geral: estrutura, debugging, testes, troubleshooting.
+
+#### Backend
 - **backend-developer** — Visão geral backend; use **backend-api-demos**, **backend-services-demos**, **backend-flask-app**, **backend-new-route** para cenários específicos.
+- **backend-maintenance** — Manutenção do backend: rotas, serviços, blueprints, error handling, logging, servir frontend.
+
+#### Frontend
 - **frontend-developer** — Visão geral frontend; use **frontend-demos-structure**, **frontend-api-demos**, **frontend-ui-chat**, **frontend-build-serve** para cenários específicos.
+- **frontend-maintenance** — Manutenção do frontend: componentes React, estado, API calls, CSS, responsividade, debugging.
+
+#### Deploy e Infraestrutura
+- **render-deploy** — Deploy e manutenção no Render: build commands, Procfile, variáveis de ambiente, troubleshooting, logs, domínio customizado.
+
+#### Outros
 - **pull-request-creator** — Template e fluxo de PR.
 - **sdr-zapi** — SDR no WhatsApp via Z-API: webhook, envio de mensagem, agente interno (schedule_meeting).
 - **testing-local-backend** — Testes locais: subir Flask, testar /api/zapi/test-webhook, Playground, checklist pós-implementação.
@@ -202,8 +239,15 @@ docs/                                  # Documentação
 | id | Nome | Instruções | Tools |
 |----|------|------------|-------|
 | `juridico` | Assistente Jurídico de Contratos | `ai.prompts.templates` | `ai.tools.juridico` (search_contracts, search_faqs) |
-| `investment` | CryptoAnalyst - Análise de Investimento | `ai.prompts.investment` | `ai.tools.investment` (Binance/trading) |
-| `planilha` | Analista de Dados - Planilha Excel | `ai.prompts.planilha` | `ai.tools.planilha` (query_spreadsheet) |
+| `investment` | CryptoAnalyst - Análise de Investimento | `ai.prompts.investment` | `ai.tools.investment` (analyze_bitcoin_market) |
+| `planilha` | Analista de Dados - Planilha Excel | `ai.prompts.planilha` | `ai.tools.planilha` (query_spreadsheet) + code_interpreter |
+| `marketing` | MarketingPro - Marketing Digital | `ai.prompts.marketing` | `ai.tools.marketing` (analyze_marketing_metrics) |
+| `rh` | HRExpert - Recursos Humanos | `ai.prompts.rh` | `ai.tools.rh` (analyze_hr_metrics) |
+| `suporte` | TechSupport - Suporte Técnico | `ai.prompts.suporte` | `ai.tools.suporte` (search_knowledge_base) |
+| `vendas` | SalesPro - Vendas | `ai.prompts.vendas` | `ai.tools.vendas` (analyze_sales_funnel) |
+| `redacao` | ContentWriter - Redação e Conteúdo | `ai.prompts.redacao` | `ai.tools.redacao` (analyze_content) |
+
+**Nota:** Todos os agentes do Playground têm `code_interpreter` habilitado para análise de arquivos (PDF, Excel, CSV).
 
 ### Uso interno (não aparecem no Playground)
 
