@@ -39,6 +39,51 @@ AGENTS_REGISTRY = [
         "tools_attr": "TOOLS_DEFINITION",
         "playground": True,
     },
+    {
+        "id": "marketing",
+        "name": "MarketingPro - Marketing Digital",
+        "instructions_module": "ai.prompts.marketing",
+        "instructions_attr": "MARKETING_ASSISTANT_INSTRUCTIONS",
+        "tools_module": "ai.tools.marketing",
+        "tools_attr": "TOOLS_DEFINITION",
+        "playground": True,
+    },
+    {
+        "id": "rh",
+        "name": "HRExpert - Recursos Humanos",
+        "instructions_module": "ai.prompts.rh",
+        "instructions_attr": "RH_ASSISTANT_INSTRUCTIONS",
+        "tools_module": "ai.tools.rh",
+        "tools_attr": "TOOLS_DEFINITION",
+        "playground": True,
+    },
+    {
+        "id": "suporte",
+        "name": "TechSupport - Suporte Técnico",
+        "instructions_module": "ai.prompts.suporte",
+        "instructions_attr": "SUPORTE_ASSISTANT_INSTRUCTIONS",
+        "tools_module": "ai.tools.suporte",
+        "tools_attr": "TOOLS_DEFINITION",
+        "playground": True,
+    },
+    {
+        "id": "vendas",
+        "name": "SalesPro - Vendas",
+        "instructions_module": "ai.prompts.vendas",
+        "instructions_attr": "VENDAS_ASSISTANT_INSTRUCTIONS",
+        "tools_module": "ai.tools.vendas",
+        "tools_attr": "TOOLS_DEFINITION",
+        "playground": True,
+    },
+    {
+        "id": "redacao",
+        "name": "ContentWriter - Redação e Conteúdo",
+        "instructions_module": "ai.prompts.redacao",
+        "instructions_attr": "REDACAO_ASSISTANT_INSTRUCTIONS",
+        "tools_module": "ai.tools.redacao",
+        "tools_attr": "TOOLS_DEFINITION",
+        "playground": True,
+    },
 ]
 
 # Agentes de uso interno (ex.: SDR no WhatsApp via Z-API). Não listados no Playground.
@@ -81,20 +126,42 @@ def get_default_agent() -> dict[str, Any]:
 
 def load_agent_instructions(agent_id: str) -> str | None:
     """Carrega instruções (prompt) do agente a partir do registry."""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     cfg = get_agent_config(agent_id)
     if not cfg:
+        logger.error(f"❌ Agente {agent_id} não encontrado no registry")
         return None
-    mod = importlib.import_module(cfg["instructions_module"])
-    return getattr(mod, cfg["instructions_attr"], None)
+    try:
+        mod = importlib.import_module(cfg["instructions_module"])
+        instructions = getattr(mod, cfg["instructions_attr"], None)
+        if instructions is None:
+            logger.error(f"❌ Atributo {cfg['instructions_attr']} não encontrado em {cfg['instructions_module']}")
+        return instructions
+    except Exception as e:
+        logger.error(f"❌ Erro ao carregar instruções do agente {agent_id}: {e}")
+        return None
 
 
 def load_agent_tools(agent_id: str) -> list | None:
     """Carrega TOOLS_DEFINITION do agente a partir do registry."""
+    import logging
+    logger = logging.getLogger(__name__)
+    
     cfg = get_agent_config(agent_id)
     if not cfg:
+        logger.error(f"❌ Agente {agent_id} não encontrado no registry")
         return None
-    mod = importlib.import_module(cfg["tools_module"])
-    return getattr(mod, cfg["tools_attr"], None)
+    try:
+        mod = importlib.import_module(cfg["tools_module"])
+        tools = getattr(mod, cfg["tools_attr"], None)
+        if tools is None:
+            logger.error(f"❌ Atributo {cfg['tools_attr']} não encontrado em {cfg['tools_module']}")
+        return tools
+    except Exception as e:
+        logger.error(f"❌ Erro ao carregar tools do agente {agent_id}: {e}")
+        return None
 
 
 def get_agent_tool_names(agent_id: str) -> set[str]:

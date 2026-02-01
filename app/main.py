@@ -68,13 +68,26 @@ if os.path.isdir(_frontend_dist):
     @app.route("/demos")
     @app.route("/demos/")
     def demos_index():
-        return send_from_directory(_frontend_dist, "index.html")
+        response = send_from_directory(_frontend_dist, "index.html")
+        # Força atualização do cache do navegador
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
     @app.route("/demos/<path:path>")
     def demos_static(path):
         p = os.path.join(_frontend_dist, path)
         if os.path.isfile(p):
-            return send_from_directory(_frontend_dist, path)
-        return send_from_directory(_frontend_dist, "index.html")
+            response = send_from_directory(_frontend_dist, path)
+            # Para assets, permite cache mas com validação
+            if path.startswith('assets/'):
+                response.headers['Cache-Control'] = 'public, max-age=31536000'
+            else:
+                response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+            return response
+        response = send_from_directory(_frontend_dist, "index.html")
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        return response
     logger.info("✅ Frontend de demos em /demos")
 else:
     logger.warning("⚠️ frontend/dist não encontrado. Rode 'cd frontend && npm run build' para servir /demos")
@@ -114,6 +127,16 @@ def search_faqs():
     except Exception as e:
         log_error('app.main', f"Erro na busca de FAQs: {e}")
         return jsonify({"error": "Internal server error"}), 500
+
+# Handler de erro global para garantir que sempre retorne JSON em caso de erro
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Endpoint não encontrado"}), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    logger.exception("Erro interno do servidor")
+    return jsonify({"error": "Erro interno do servidor"}), 500
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5004)

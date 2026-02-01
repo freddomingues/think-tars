@@ -41,11 +41,13 @@ def _assistant_id_for_agent(agent_id: str) -> str | None:
 
 def list_assistants() -> list[dict[str, str]]:
     """Lista assistentes disponíveis no Playground (apenas agentes com playground=True)."""
-    return [
+    assistants = [
         {"id": a["id"], "name": a["name"]}
         for a in AGENTS_REGISTRY
         if a.get("playground", True)
     ]
+    logger.info(f"📋 Listando {len(assistants)} assistentes do Playground: {[a['id'] for a in assistants]}")
+    return assistants
 
 
 def create_conversation(agent_id: str | None = None, vector_store_id: str | None = None) -> dict[str, Any] | None:
@@ -115,10 +117,15 @@ def create_conversation(agent_id: str | None = None, vector_store_id: str | None
     }
 
 
-def send_message(conversation_id: str, content: str) -> dict[str, Any] | None:
+def send_message(conversation_id: str, content: str, file_ids: list[str] | None = None) -> dict[str, Any] | None:
     """
     Envia mensagem na conversa, executa o assistant e retorna a resposta.
     Só são executadas as tools do agente da conversa (isolamento por assistente).
+    
+    Args:
+        conversation_id: ID da conversa
+        content: Conteúdo da mensagem
+        file_ids: Lista opcional de IDs de arquivos da OpenAI para anexar à mensagem
     """
     conv = _conversations.get(conversation_id)
     if not conv:
@@ -131,6 +138,7 @@ def send_message(conversation_id: str, content: str) -> dict[str, Any] | None:
         assistant_id=conv["assistant_id"],
         user_message=content,
         allowed_tool_names=allowed_tool_names,
+        file_ids=file_ids,
     )
     if text is None:
         return {"error": "Não foi possível obter resposta do assistente."}

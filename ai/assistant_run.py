@@ -23,6 +23,7 @@ def run_turn(
     assistant_id: str,
     user_message: str,
     allowed_tool_names: set[str] | None = None,
+    file_ids: list[str] | None = None,
 ) -> str | None:
     """
     Adiciona mensagem do usuário na thread, roda o assistant (com tool calls) e retorna o texto da última mensagem do assistente.
@@ -30,16 +31,24 @@ def run_turn(
     Args:
         allowed_tool_names: Conjunto de nomes de tools permitidos para este assistente.
             Se None, todas as tools em AVAILABLE_FUNCTIONS são permitidas (comportamento legado).
+        file_ids: Lista opcional de IDs de arquivos da OpenAI para anexar à mensagem.
 
     Returns:
         Texto da resposta do assistente ou None em caso de erro/timeout.
     """
     try:
-        client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=user_message,
-        )
+        message_params = {
+            "thread_id": thread_id,
+            "role": "user",
+            "content": user_message,
+        }
+        if file_ids:
+            # Usa code_interpreter para permitir leitura direta de PDF, Excel, etc.
+            message_params["attachments"] = [
+                {"file_id": file_id, "tools": [{"type": "code_interpreter"}]}
+                for file_id in file_ids
+            ]
+        client.beta.threads.messages.create(**message_params)
         run = client.beta.threads.runs.create(
             thread_id=thread_id,
             assistant_id=assistant_id,

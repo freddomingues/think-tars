@@ -1,22 +1,65 @@
 # ai/assistant_manager.py
+import logging
 from openai import OpenAI
 from config.settings import OPENAI_API_KEY, LLM_MODEL
 
+logger = logging.getLogger(__name__)
 openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 def _create_or_get(name: str, instructions: str, tools: list) -> str | None:
     """Cria ou recupera assistente por nome, com instruções e tools dados."""
     try:
+        # Adiciona code_interpreter para permitir leitura de arquivos (PDF, Excel, etc.)
+        tools_list = list(tools) if tools else []
+        # Verifica se code_interpreter já está nas tools
+        has_code_interpreter = False
+        for t in tools_list:
+            tool_type = t.get("type") if isinstance(t, dict) else (getattr(t, "type", None) if hasattr(t, "type") else None)
+            if tool_type == "code_interpreter":
+                has_code_interpreter = True
+                break
+        
+        if not has_code_interpreter:
+            tools_list.append({"type": "code_interpreter"})
+        
         assistants = openai_client.beta.assistants.list(order="desc", limit=100)
         for a in assistants.data:
             if a.name == name:
+                # Atualiza o assistente existente para incluir code_interpreter se necessário
+                current_tools = []
+                for t in (a.tools or []):
+                    if hasattr(t, "type"):
+                        tool_dict = {"type": t.type}
+                        # Se for function tool, preserva o campo function completo
+                        if t.type == "function" and hasattr(t, "function"):
+                            tool_dict["function"] = {
+                                "name": t.function.name,
+                                "description": t.function.description,
+                                "parameters": t.function.parameters
+                            }
+                        current_tools.append(tool_dict)
+                    elif isinstance(t, dict):
+                        current_tools.append(t)
+                
+                has_code = any(t.get("type") == "code_interpreter" for t in current_tools)
+                if not has_code:
+                    current_tools.append({"type": "code_interpreter"})
+                    try:
+                        openai_client.beta.assistants.update(
+                            assistant_id=a.id,
+                            tools=current_tools
+                        )
+                        logger.info(f"Assistente {a.id} atualizado com code_interpreter")
+                    except Exception as e:
+                        logger.warning(f"Não foi possível atualizar tools do assistente {a.id}: {e}")
                 return a.id
+        
         created = openai_client.beta.assistants.create(
             name=name,
             instructions=instructions,
             model=LLM_MODEL,
-            tools=tools,
+            tools=tools_list,
         )
         return created.id
     except Exception:

@@ -13,12 +13,16 @@ logger = logging.getLogger(__name__)
 def query_spreadsheet_data(query: str) -> str | dict[str, Any]:
     """
     Consulta/análise em planilha Excel.
-    Por enquanto retorna mensagem informativa; futuramente aceitará upload de Excel na aplicação.
+    
+    NOTA: Esta função é mantida para compatibilidade, mas o agente de planilhas agora usa
+    code_interpreter diretamente para analisar arquivos Excel anexados às mensagens.
+    
+    Quando um arquivo Excel é anexado, o code_interpreter pode ler e analisar usando pandas.
     """
-    # Stub: quando houver upload de Excel na demo, aqui pode-se usar dados em memória ou path
     return (
-        "Análise de planilha Excel: envie um arquivo Excel na aplicação (upload) para habilitar esta função. "
-        "Em breve você poderá fazer upload de planilhas e consultar dados, KPIs, estatísticas e métricas em linguagem natural."
+        "Para analisar uma planilha Excel, anexe o arquivo (.xlsx, .xls ou .csv) à sua mensagem. "
+        "Eu usarei o code_interpreter para ler e analisar os dados diretamente. "
+        "Você pode pedir análises como: estatísticas descritivas, filtros, agrupamentos, visualizações e muito mais."
     )
 
 
@@ -27,20 +31,20 @@ TOOLS_DEFINITION = [
         "type": "function",
         "function": {
             "name": "query_spreadsheet",
-            "description": """Realiza consultas e análises em planilhas Excel.
-            Use esta ferramenta para:
-            - Obter informações sobre a estrutura da planilha (colunas, linhas, tipos de dados)
-            - Calcular estatísticas descritivas (média, mediana, soma, máximo, mínimo)
-            - Analisar KPIs e indicadores
-            - Contar valores únicos ou totais
-            - Filtrar e visualizar dados
-            O usuário pode enviar uma planilha Excel na aplicação para você analisar.""",
+            "description": """Informa ao usuário como anexar arquivos Excel para análise.
+            
+            IMPORTANTE: O agente de planilhas usa code_interpreter para analisar arquivos Excel diretamente.
+            Quando o usuário anexar um arquivo Excel (.xlsx, .xls ou .csv) à mensagem, você pode usar
+            code_interpreter com Python/pandas para ler e analisar os dados.
+            
+            Use esta ferramenta apenas para orientar o usuário sobre como anexar arquivos.
+            Para análises reais, use code_interpreter quando um arquivo for anexado.""",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Descrição da consulta ou análise desejada (ex.: 'mostrar informações da planilha', 'calcular média da coluna vendas')."
+                        "description": "Descrição da consulta ou análise desejada pelo usuário."
                     }
                 },
                 "required": ["query"]

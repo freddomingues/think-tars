@@ -22,8 +22,11 @@ CHUNK_SIZE = int(os.getenv('CHUNK_SIZE', 1000))
 CHUNK_OVERLAP = int(os.getenv('CHUNK_OVERLAP', 200))
 
 # --- Binance ---
-BINANCE_API_KEY = os.getenv('BINANCE_API_KEY', '')
-BINANCE_API_SECRET = os.getenv('BINANCE_API_SECRET', '')
+# NOTA: Credenciais removidas por segurança - operações de trading não estão disponíveis para clientes externos
+# BINANCE_API_KEY = os.getenv('BINANCE_API_KEY', '')
+# BINANCE_API_SECRET = os.getenv('BINANCE_API_SECRET', '')
+BINANCE_API_KEY = ''
+BINANCE_API_SECRET = ''
 
 # --- Email Notifications ---
 SMTP_SERVER = os.getenv('SMTP_SERVER', 'smtp.gmail.com')
@@ -39,3 +42,5 @@ ZAPI_TOKEN_INSTANCE = os.getenv('ZAPI_TOKEN_INSTANCE', '')
 # Token de segurança da conta (Client-Token). Se a Z-API exigir, configure no painel e coloque aqui.
 # Ver: https://developer.z-api.io/en/security/client-token
 ZAPI_CLIENT_TOKEN = os.getenv('ZAPI_CLIENT_TOKEN', '')
+# Número do WhatsApp do SDR (para receber leads do site)
+SDR_WHATSAPP_NUMBER = os.getenv('SDR_WHATSAPP_NUMBER', '554187497364')
