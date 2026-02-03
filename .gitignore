@@ -10,3 +10,7 @@ document_cache.json
 logs/
 .DS_Store
 get-pip.py
+
+# Google Calendar API credentials
+credentials.json
+token.json

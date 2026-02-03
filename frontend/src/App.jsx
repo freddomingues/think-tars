@@ -391,6 +391,25 @@ export default function App() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [currentAgentSlide, setCurrentAgentSlide] = useState(0)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  
+  // Detectar tamanho da tela para ajustar número de agentes por slide
+  const [agentsPerSlide, setAgentsPerSlide] = useState(4)
+  
+  useEffect(() => {
+    const updateAgentsPerSlide = () => {
+      if (window.innerWidth <= 480) {
+        setAgentsPerSlide(2) // 2 agentes por slide no mobile pequeno
+      } else if (window.innerWidth <= 768) {
+        setAgentsPerSlide(3) // 3 agentes por slide no tablet
+      } else {
+        setAgentsPerSlide(4) // 4 agentes por slide no desktop
+      }
+    }
+    
+    updateAgentsPerSlide()
+    window.addEventListener('resize', updateAgentsPerSlide)
+    return () => window.removeEventListener('resize', updateAgentsPerSlide)
+  }, [])
   const solutions = [
     {
       title: "IA como Secretária Virtual",
@@ -880,9 +899,9 @@ export default function App() {
               <div className="agents-carousel-slides" style={{ 
                 transform: `translateX(-${currentAgentSlide * 100}%)`
               }}>
-                {Array.from({ length: Math.ceil(assistants.length / 4) }).map((_, slideIndex) => (
+                {Array.from({ length: Math.ceil(assistants.length / agentsPerSlide) }).map((_, slideIndex) => (
                   <div key={slideIndex} style={{ minWidth: '100%', display: 'flex', gap: '0.75rem', padding: '0.5rem', justifyContent: 'center', alignItems: 'stretch', height: 'auto' }}>
-                    {assistants.slice(slideIndex * 4, slideIndex * 4 + 4).map((assistant) => (
+                    {assistants.slice(slideIndex * agentsPerSlide, slideIndex * agentsPerSlide + agentsPerSlide).map((assistant) => (
                       <div
                         key={assistant.id}
                         onClick={() => {
@@ -964,7 +983,7 @@ export default function App() {
                     </div>
 
             <div className="agents-carousel-indicators">
-              {Array.from({ length: Math.ceil(assistants.length / 4) }).map((_, index) => (
+              {Array.from({ length: Math.ceil(assistants.length / agentsPerSlide) }).map((_, index) => (
                 <button
                   key={index}
                   className={`agents-carousel-indicator ${index === currentAgentSlide ? 'active' : ''}`}

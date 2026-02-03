@@ -14,7 +14,15 @@ from ai.trading.trading_tools import (
     sell_bitcoin,  # Desabilitada - retorna mensagem de segurança
 )
 from ai.tools.planilha import query_spreadsheet_data
-from ai.tools.sdr import schedule_meeting
+from ai.tools.sdr import (
+    schedule_meeting,
+    check_available_slots,
+    create_calendar_event,
+    cancel_calendar_event,
+    get_events_by_date,
+    get_tomorrow_events,
+    confirm_tomorrow_agenda,
+)
 from ai.tools.marketing import analyze_marketing_metrics
 from ai.tools.rh import analyze_hr_metrics
 from ai.tools.suporte import search_knowledge_base
@@ -32,6 +40,12 @@ AVAILABLE_FUNCTIONS = {
     "sell_bitcoin": sell_bitcoin,
     "query_spreadsheet": query_spreadsheet_data,
     "schedule_meeting": schedule_meeting,
+    "check_available_slots": check_available_slots,
+    "create_calendar_event": create_calendar_event,
+    "cancel_calendar_event": cancel_calendar_event,
+    "get_events_by_date": get_events_by_date,
+    "get_tomorrow_events": get_tomorrow_events,
+    "confirm_tomorrow_agenda": confirm_tomorrow_agenda,
     "analyze_marketing_metrics": analyze_marketing_metrics,
     "analyze_hr_metrics": analyze_hr_metrics,
     "search_knowledge_base": search_knowledge_base,

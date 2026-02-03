@@ -59,8 +59,17 @@ def dispatch_tool_call(
             "analyze_bitcoin_market",
             "get_bitcoin_price",
             "get_portfolio_status",
+            "get_tomorrow_events",
         ):
             result = fn()
+        elif function_name in (
+            "check_available_slots",
+            "create_calendar_event",
+            "cancel_calendar_event",
+            "get_events_by_date",
+            "confirm_tomorrow_agenda",
+        ):
+            result = fn(**args)
         else:
             result = fn(**args)
 

@@ -44,3 +44,10 @@ ZAPI_TOKEN_INSTANCE = os.getenv('ZAPI_TOKEN_INSTANCE', '')
 ZAPI_CLIENT_TOKEN = os.getenv('ZAPI_CLIENT_TOKEN', '')
 # Número do WhatsApp do SDR (para receber leads do site)
 SDR_WHATSAPP_NUMBER = os.getenv('SDR_WHATSAPP_NUMBER', '554187497364')
+# Número do WhatsApp para notificações de agendamento (obrigatório após criar evento)
+AGENDAMENTO_WHATSAPP_NUMBER = os.getenv('AGENDAMENTO_WHATSAPP_NUMBER', '554191927778')
+
+# --- Google Calendar API (SDR) ---
+GOOGLE_CALENDAR_CREDENTIALS_PATH = os.getenv('GOOGLE_CALENDAR_CREDENTIALS_PATH', 'credentials.json')
+GOOGLE_CALENDAR_TOKEN_PATH = os.getenv('GOOGLE_CALENDAR_TOKEN_PATH', 'token.json')
+GOOGLE_CALENDAR_ID = os.getenv('GOOGLE_CALENDAR_ID', 'primary')
