@@ -72,6 +72,9 @@ def run_sdr_turn(phone: str, user_message: str) -> str | None:
     Returns:
         Texto da resposta do SDR ou None em caso de erro.
     """
+    from datetime import datetime
+    import pytz
+    
     thread_id = get_or_create_sdr_thread(phone)
     if not thread_id:
         logger.error("SDR: get_or_create_sdr_thread retornou None para phone=%s (verifique OPENAI_API_KEY e INTERNAL_AGENTS_REGISTRY)", phone)
@@ -81,12 +84,27 @@ def run_sdr_turn(phone: str, user_message: str) -> str | None:
         logger.error("SDR: _get_sdr_assistant_id retornou None (agente SDR não encontrado ou falha ao criar assistente)")
         return None
     allowed_tool_names = get_agent_tool_names(SDR_AGENT_ID)
+    
+    # Adiciona data/hora atual no início da mensagem para o agente interpretar expressões temporais
+    try:
+        # Usa timezone de São Paulo (Brasil)
+        tz_sp = pytz.timezone('America/Sao_Paulo')
+        agora = datetime.now(tz_sp)
+        data_hora_formatada = agora.strftime('%d/%m/%Y %H:%M')
+        user_message_com_contexto = f"[DATA/HORA ATUAL: {data_hora_formatada}]\n\n{user_message}"
+    except Exception as e:
+        # Fallback se pytz não estiver disponível
+        logger.warning(f"Erro ao obter data/hora com timezone, usando UTC: {e}")
+        agora = datetime.now()
+        data_hora_formatada = agora.strftime('%d/%m/%Y %H:%M')
+        user_message_com_contexto = f"[DATA/HORA ATUAL: {data_hora_formatada}]\n\n{user_message}"
+    
     try:
         reply = run_turn(
             client=_client(),
             thread_id=thread_id,
             assistant_id=assistant_id,
-            user_message=user_message,
+            user_message=user_message_com_contexto,
             allowed_tool_names=allowed_tool_names,
         )
         if not reply:

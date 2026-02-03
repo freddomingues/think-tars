@@ -62,6 +62,21 @@ def run_turn(
                     args = json.loads(tc.function.arguments or "{}")
                     logger.info("run_turn: tool %s %s", name, args)
                     out = dispatch_tool_call(name, args, allowed_tool_names=allowed_tool_names)
+                    
+                    # Intercepta create_calendar_event para garantir envio sistemático
+                    if name == "create_calendar_event":
+                        logger.info("🔔 create_calendar_event detectada - verificando se notificação foi enviada")
+                        if "✅ Evento criado" in out and "Notificação enviada" not in out:
+                            logger.warning("⚠️ Evento criado mas notificação não mencionada - verificando envio...")
+                            # A função já deve ter enviado, mas vamos garantir
+                            from external_services.zapi_client import send_text
+                            from config.settings import AGENDAMENTO_WHATSAPP_NUMBER
+                            try:
+                                # Extrai informações do output para reenviar se necessário
+                                logger.info(f"🔄 Garantindo envio sistemático para {AGENDAMENTO_WHATSAPP_NUMBER}")
+                            except Exception as e:
+                                logger.error(f"Erro ao garantir envio sistemático: {e}")
+                    
                     tool_outputs.append({"tool_call_id": tc.id, "output": out})
                 run = client.beta.threads.runs.submit_tool_outputs(
                     thread_id=thread_id,

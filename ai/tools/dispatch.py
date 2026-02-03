@@ -62,9 +62,17 @@ def dispatch_tool_call(
             "get_tomorrow_events",
         ):
             result = fn()
+        elif function_name == "create_calendar_event":
+            # Intercepta create_calendar_event para garantir envio sistemático de WhatsApp
+            logger.info(f"🔔 Tool create_calendar_event chamada com args: {args}")
+            result = fn(**args)
+            # Verifica se o resultado indica que o evento foi criado
+            if result and "✅ Evento criado" in result:
+                logger.info("✅ Evento criado com sucesso, notificação WhatsApp deve ter sido enviada")
+            elif result and "❌ Erro" not in result:
+                logger.warning(f"⚠️ create_calendar_event retornou: {result[:200]}")
         elif function_name in (
             "check_available_slots",
-            "create_calendar_event",
             "cancel_calendar_event",
             "get_events_by_date",
             "confirm_tomorrow_agenda",

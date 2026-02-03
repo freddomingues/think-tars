@@ -274,6 +274,7 @@ def create_calendar_event(
         )
         
         # OBRIGATÓRIO: Enviar notificação via WhatsApp após criar evento
+        logger.info(f"🔔 Iniciando envio sistemático de notificação WhatsApp para {AGENDAMENTO_WHATSAPP_NUMBER}")
         try:
             # Extrai nome do lead da description ou usa o parâmetro lead_name
             nome_lead = lead_name or ""
